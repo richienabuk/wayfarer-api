@@ -1,0 +1,36 @@
+{
+  "name": "wayfarer-api",
+  "version": "1.0.0",
+  "description": "WayFarer API is a public bus transportation booking server built with Node JS, Express JS, and PostgreSQL",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node src/index.js",
+    "test": "mocha --require @babel/register ./test --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/richienabuk/wayfarer-api.git"
+  },
+  "author": "Imo-owo Nabuk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/richienabuk/wayfarer-api/issues"
+  },
+  "homepage": "https://github.com/richienabuk/wayfarer-api#readme",
+  "dependencies": {
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.0",
+    "@babel/node": "^7.5.0",
+    "@babel/preset-env": "^7.5.0",
+    "@babel/register": "^7.4.4",
+    "chai": "^4.2.0",
+    "eslint": "^6.0.1",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.0",
+    "mocha": "^6.1.4",
+    "nodemon": "^1.19.1"
+  }
+}
