@@ -3,13 +3,22 @@ import chaiHttp from 'chai-http';
 import faker from 'faker';
 import app from '../src/index';
 
+/**
+ * Generates a user and apply the details for test
+ */
 const ranFirstName = faker.name.firstName();
 const ranLastName = faker.name.lastName();
 const ranEmail = faker.internet.email();
-
+const user = {
+  first_name: ranFirstName,
+  last_name: ranLastName,
+  email: ranEmail,
+  password: 'password',
+};
 
 const should = chai.should();
 chai.use(chaiHttp);
+const { expect } = chai;
 
 describe('/GET auth', () => {
   it('it should show auth landing', (done) => {
@@ -28,12 +37,6 @@ describe('/GET auth', () => {
  */
 describe('/POST User signup', () => {
   it('it should register a new user', (done) => {
-    const user = {
-      first_name: ranFirstName,
-      last_name: ranLastName,
-      email: ranEmail,
-      password: 'password',
-    };
     // send request to the app
     chai.request(app)
       .post('/api/v1/auth/signup')
@@ -44,7 +47,7 @@ describe('/POST User signup', () => {
         res.should.have.status(201);
         res.body.should.be.a('object');
         res.body.should.have.property('data');
-        res.body.should.have.property('status').eq('success');
+        res.body.should.have.property('status').eq('success');      
         done();
       });
   });
@@ -55,11 +58,6 @@ describe('/POST User signup', () => {
  */
 describe('/POST User login', () => {
   it('should return 200 and token for valid credentials', (done) => {
-    // mock invalid user input
-    const user = {
-      email: 'akpan@ngr.com',
-      password: 'secret',
-    };
     // send request to the app
     chai.request(app)
       .post('/api/v1/auth/signin')
@@ -69,7 +67,8 @@ describe('/POST User login', () => {
         should.exist(res.body);
         res.should.have.status(200);
         res.body.should.be.a('object');
-        res.body.should.have.property('token');
+        // eslint-disable-next-line no-unused-expressions
+        expect(res.body.data.token).to.exist;
         res.body.should.have.property('status').eq('success');
         done();
       });
