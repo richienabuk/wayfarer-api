@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 const Authentication = {
   hashPassword(password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(8))
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(8));
   },
 
   comparePassword(hashPassword, password) {
