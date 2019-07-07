@@ -23,7 +23,10 @@ describe('/GET auth', () => {
   });
 });
 
-describe('/POST user', () => {
+/**
+ * Test for user signup
+ */
+describe('/POST User signup', () => {
   it('it should register a new user', (done) => {
     const user = {
       first_name: ranFirstName,
@@ -31,6 +34,7 @@ describe('/POST user', () => {
       email: ranEmail,
       password: 'password',
     };
+    // send request to the app
     chai.request(app)
       .post('/api/v1/auth/signup')
       .type('json')
@@ -40,6 +44,32 @@ describe('/POST user', () => {
         res.should.have.status(201);
         res.body.should.be.a('object');
         res.body.should.have.property('data');
+        res.body.should.have.property('status').eq('success');
+        done();
+      });
+  });
+});
+
+/**
+ *  Test for user login
+ */
+describe('/POST User login', () => {
+  it('should return 200 and token for valid credentials', (done) => {
+    // mock invalid user input
+    const user = {
+      email: 'akpan@ngr.com',
+      password: 'secret',
+    };
+    // send request to the app
+    chai.request(app)
+      .post('/api/v1/auth/signin')
+      .type('json')
+      .send(user)
+      .end((e, res) => {
+        should.exist(res.body);
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('token');
         res.body.should.have.property('status').eq('success');
         done();
       });
