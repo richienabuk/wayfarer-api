@@ -47,7 +47,7 @@ describe('/POST User signup', () => {
         res.should.have.status(201);
         res.body.should.be.a('object');
         res.body.should.have.property('data');
-        res.body.should.have.property('status').eq('success');      
+        res.body.should.have.property('status').eq('success');
         done();
       });
   });
