@@ -1,17 +1,20 @@
 import db from '../database';
 import Auth from './Auth';
 
-const Users = {
-  async create(req, res) {
+const User = {
+  async register(req, res) {
     if (!req.body.email || !req.body.password || !req.body.first_name || !req.body.last_name) {
       return res.status(400).send({
-        status: 'failure',
-        message: 'Some values are missing',
+        status: 'error',
+        error: 'Some values are missing',
       });
     }
 
     if (!Auth.isValidEmail(req.body.email)) {
-      return res.status(400).send({ message: 'Please enter a valid email address' });
+      return res.status(400).send({
+        status: 'error',
+        error: 'Please enter a valid email address',
+      });
     }
 
     const hashPassword = Auth.hashPassword(req.body.password);
@@ -43,15 +46,70 @@ const Users = {
       });
     } catch (e) {
       if (e.routine === '_bt_check_unique') {
-        return res.status(400).send({ message: 'User with that EMAIL already exist' });
+        return res.status(400).send({
+          status: 'error',
+          error: 'User with that EMAIL already exist',
+        });
       }
-      return res.status(400).send(e);
+      return res.status(400).send({
+        status: 'error',
+        error: e,
+      });
+    }
+  },
+
+  async login(req, res) {
+    if (!req.body.email || !req.body.password) {
+      return res.status(400).send({
+        status: 'error',
+        error: 'Some values are missing',
+      });
+    }
+    if (!Auth.isValidEmail(req.body.email)) {
+      return res.status(400).send({
+        status: 'error',
+        error: 'Please enter a valid email address',
+      });
+    }
+    const text = 'SELECT * FROM users WHERE email = $1';
+    try {
+      const { rows } = await db.query(text, [req.body.email]);
+      if (!rows[0]) {
+        return res.status(400).send({
+          status: 'error',
+          error: 'The credentials you provided is incorrect',
+        });
+      }
+      if (!Auth.comparePassword(rows[0].password, req.body.password)) {
+        return res.status(400).send({
+          status: 'error',
+          error: 'The credentials you provided is incorrect',
+        });
+      }
+      const jwtToken = Auth.generateToken(rows[0].id);
+
+      const data = {};
+      data.user_id = rows[0].id;
+      data.is_admin = rows[0].is_admin;
+      data.token = jwtToken;
+      return res.status(200).send({
+        status: 'success',
+        data,
+      });
+    } catch (e) {
+      return res.status(400).send({
+        status: 'error',
+        error: e,
+      });
     }
   },
 
   async index(req, res) {
-    res.status(200).send({ message: 'Welcome to WayFarer API' });
+    res.status(200).send({
+      status: 'success',
+      message: 'Welcome to WayFarer API',
+    });
   },
 };
 
-export default Users;
+export default User;

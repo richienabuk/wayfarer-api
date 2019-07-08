@@ -1,5 +1,5 @@
 import express from 'express';
-import Users from '../controllers/User';
+import User from '../controllers/User';
 
 const router = express.Router();
 
@@ -8,8 +8,9 @@ export default (app) => {
   app.use(express.urlencoded({ extended: false }));
 
   // User Auth endpoints
-  router.post('/auth/signup', Users.create);
-  router.get('/auth', Users.index);
+  router.post('/auth/signup', User.register);
+  router.post('/auth/signin', User.login);
+  router.get('/auth', User.index);
 
   app.use('/api/v1', router);
 };
