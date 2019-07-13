@@ -1,17 +1,17 @@
 import db from '../database';
-import Auth from './Auth';
+import Auth from './utils/AuthHelper';
 
 const User = {
   async register(req, res) {
     if (!req.body.email || !req.body.password || !req.body.first_name || !req.body.last_name) {
-      return res.status(400).send({
+      return res.status(401).send({
         status: 'error',
         error: 'Some values are missing',
       });
     }
 
     if (!Auth.isValidEmail(req.body.email)) {
-      return res.status(400).send({
+      return res.status(401).send({
         status: 'error',
         error: 'Please enter a valid email address',
       });
@@ -29,12 +29,12 @@ const User = {
       req.body.first_name,
       req.body.last_name,
       hashPassword,
-      false,
+      req.body.is_admin ? req.body.is_admin : false,
     ];
 
     try {
       const { rows } = await db.query(createUserQuery, user);
-      const jwtToken = Auth.generateToken(rows[0].id);
+      const jwtToken = Auth.generateToken(rows[0].id, rows[0].is_admin);
 
       const data = {};
       data.user_id = rows[0].id;
@@ -46,7 +46,7 @@ const User = {
       });
     } catch (e) {
       if (e.routine === '_bt_check_unique') {
-        return res.status(400).send({
+        return res.status(422).send({
           status: 'error',
           error: 'User with that EMAIL already exist',
         });
@@ -66,7 +66,7 @@ const User = {
       });
     }
     if (!Auth.isValidEmail(req.body.email)) {
-      return res.status(400).send({
+      return res.status(401).send({
         status: 'error',
         error: 'Please enter a valid email address',
       });
@@ -75,18 +75,18 @@ const User = {
     try {
       const { rows } = await db.query(text, [req.body.email]);
       if (!rows[0]) {
-        return res.status(400).send({
+        return res.status(401).send({
           status: 'error',
           error: 'The credentials you provided is incorrect',
         });
       }
       if (!Auth.comparePassword(rows[0].password, req.body.password)) {
-        return res.status(400).send({
+        return res.status(401).send({
           status: 'error',
           error: 'The credentials you provided is incorrect',
         });
       }
-      const jwtToken = Auth.generateToken(rows[0].id);
+      const jwtToken = Auth.generateToken(rows[0].id, rows[0].is_admin);
 
       const data = {};
       data.user_id = rows[0].id;
@@ -99,7 +99,7 @@ const User = {
     } catch (e) {
       return res.status(400).send({
         status: 'error',
-        error: e,
+        error: `An error occured ${e}`,
       });
     }
   },
