@@ -1,6 +1,10 @@
 import express from 'express';
+import auth from '../middleware/auth';
+import admin from '../middleware/admin';
 import User from '../controllers/User';
 import Bus from '../controllers/Bus';
+import Trip from '../controllers/Trip';
+import Booking from '../controllers/Booking';
 
 const router = express.Router();
 
@@ -14,8 +18,14 @@ export default (app) => {
   router.get('/auth', User.index);
 
   // Bus endpoints
-  router.post('/buses', Bus.create);
-  router.get('/buses', Bus.index);
+  router.post('/buses', [auth, admin], Bus.create);
+  router.get('/buses', [auth, admin], Bus.index);
+
+  // Trip endpoints
+  router.post('/trips', [auth, admin], Trip.create);
+  router.get('/trips', auth, Trip.index);
+  // router.get('/trips/:id', auth, Trip.show);
+  router.put('/trips/:id', [auth, admin], Trip.update);
 
   app.use('/api/v1', router);
 };

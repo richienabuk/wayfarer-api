@@ -12,7 +12,7 @@ pool.on('connect', () => {
 });
 
 /**
- * Create User Table
+ * Create users table
  */
 const createUserTable = () => {
   const queryText = `CREATE TABLE IF NOT EXISTS
@@ -39,7 +39,7 @@ const createUserTable = () => {
 };
 
 /**
- * Drop User Table
+ * Drop users table
  */
 const dropUserTable = () => {
   const queryText = 'DROP TABLE IF EXISTS users returning *';
@@ -55,7 +55,7 @@ const dropUserTable = () => {
 };
 
 /**
- * Create Bus Table
+ * Create buses table
  */
 const createBusTable = () => {
   const queryText = `CREATE TABLE IF NOT EXISTS
@@ -82,7 +82,7 @@ const createBusTable = () => {
 };
 
 /**
- * Drop Bus Table
+ * Drop buses table
  */
 const dropBusTable = () => {
   const queryText = 'DROP TABLE IF EXISTS buses returning *';
@@ -98,26 +98,85 @@ const dropBusTable = () => {
 };
 
 /**
+ * Create enum type
+ */
+const createEnumType = () => {
+  const queryText = `
+  CREATE TYPE trip_status AS ENUM ('active', 'suspended', 'cancelled')
+  `;
+
+  pool.query(queryText)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+};
+
+/**
+ * Create trips table
+ */
+const createTripTable = () => {
+  const queryText = `
+    CREATE TABLE IF NOT EXISTS
+      trips(
+        id SERIAL NOT NULL PRIMARY KEY,
+        bus_id INT NOT NULL,
+        origin VARCHAR(128) NOT NULL,
+        destination VARCHAR(128) NOT NULL,
+        trip_date DATE NOT NULL,
+        status trip_status DEFAULT 'active',
+        fare FLOAT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        FOREIGN KEY (bus_id) REFERENCES buses (id) ON DELETE CASCADE
+      )`;
+
+  pool.query(queryText)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+};
+
+/**
+ * Drop trips table
+ */
+const dropTripTable = () => {
+  const queryText = 'DROP TABLE IF EXISTS trips returning *';
+  pool.query(queryText)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+};
+/**
  * Create All Tables
  */
 const createAllTables = () => {
   createUserTable();
   createBusTable();
+  createEnumType();
+  createTripTable();
 };
 /**
  * Drop All Tables
  */
 const dropAllTables = () => {
-  dropUserTable();
+  dropTripTable();
   dropBusTable();
-};
-
-/**
- * Refresh Migration
- */
-const tablesRefresh = () => {
-  dropAllTables();
-  createAllTables();
+  dropUserTable();
 };
 
 pool.on('remove', () => {
@@ -128,11 +187,12 @@ pool.on('remove', () => {
 module.exports = {
   createUserTable,
   createBusTable,
+  createTripTable,
   createAllTables,
-  dropUserTable,
+  dropTripTable,
   dropBusTable,
+  dropUserTable,
   dropAllTables,
-  tablesRefresh,
 };
 
 // eslint-disable-next-line import/no-extraneous-dependencies
