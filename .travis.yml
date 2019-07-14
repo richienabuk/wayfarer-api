@@ -14,6 +14,6 @@ before_script:
   - npm run build
   - npm run migrate
 script:
-  - npm run coverage
+  - npm run test
 after_success:
   - npm run coverage
