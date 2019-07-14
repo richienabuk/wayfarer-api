@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import moment from 'moment';
 import app from '../../src/index';
 // import db from '../../src/database';
 // import auth from '../../src/middleware/auth';
@@ -21,6 +22,8 @@ describe('User CRUD operations /api/v1/auth/', () => {
     last_name: 'Doe',
     email: 'uwem@nigeria.com',
     password: 'secret',
+    created_at: moment(new Date()),
+    updated_at: moment(new Date()),
   };
 
   it('should check that app server exists', () => {
@@ -94,7 +97,7 @@ describe('User CRUD operations /api/v1/auth/', () => {
   */
   describe('POST /api/v1/auth/signin', () => {
     it('should return 200 and token for valid credentials', (done) => {
-      user.email = 'uwemy@nigeria.com';
+      user.email = 'uwem@nigeria.com';
       user.password = 'secret';
       chai.request(app)
         .post('/api/v1/auth/signin')

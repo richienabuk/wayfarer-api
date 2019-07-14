@@ -1,3 +1,4 @@
+import moment from 'moment';
 import db from '../database';
 
 const Trip = {
@@ -19,8 +20,8 @@ const Trip = {
     if (!busInfo.rows[0].exists) return res.status(404).send({ status: 'error', error: 'bus does not exist' });
 
     const createTripQuery = `INSERT INTO 
-      trips(bus_id, origin, destination, trip_date, status, fare) 
-      VALUES($1,$2,$3,$4,$5, $6) 
+      trips(bus_id, origin, destination, trip_date, status, fare, created_at, updated_at)
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8)
       returning *`;
 
     const trip = [
@@ -30,6 +31,8 @@ const Trip = {
       req.body.trip_date,
       req.body.status,
       req.body.fare,
+      moment(new Date()),
+      moment(new Date()),
     ];
     try {
       const { rows } = await db.query(createTripQuery, trip);
@@ -71,7 +74,7 @@ const Trip = {
   async update(req, res) {
     const findOneQuery = 'SELECT * FROM trips WHERE id=$1';
     const updateOneQuery = `UPDATE trips
-      SET status=$1, WHERE id=$2 returning *`;
+      SET status=$1 updated_at=$2, WHERE id=$3 returning *`;
     try {
       const { rows } = await db.query(findOneQuery, [req.params.id]);
       if (!rows[0]) {
@@ -82,6 +85,7 @@ const Trip = {
       }
       const values = [
         req.body.status || rows[0].status,
+        moment(new Date()),
         req.params.id,
       ];
       const response = await db.query(updateOneQuery, values);

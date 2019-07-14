@@ -1,3 +1,4 @@
+import moment from 'moment';
 import db from '../database';
 
 const Bus = {
@@ -14,8 +15,8 @@ const Bus = {
     }
 
     const createBusQuery = `INSERT INTO 
-      buses(number_plate, manufacturer, model, year, capacity) 
-      VALUES($1,$2,$3,$4,$5) 
+      buses(number_plate, manufacturer, model, year, capacity, created_at, updated_at)
+      VALUES($1,$2,$3,$4,$5,$6,$7)
       returning *`;
 
     const bus = [
@@ -24,6 +25,8 @@ const Bus = {
       req.body.model,
       req.body.year,
       req.body.capacity,
+      moment(new Date()),
+      moment(new Date()),
     ];
     try {
       const { rows } = await db.query(createBusQuery, bus);
@@ -57,7 +60,6 @@ const Bus = {
       return res.status(200).send({
         status: 'success',
         data,
-        // rows,
         rowCount,
       });
     } catch (e) {
