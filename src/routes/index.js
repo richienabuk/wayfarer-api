@@ -27,5 +27,10 @@ export default (app) => {
   // router.get('/trips/:id', auth, Trip.show);
   router.put('/trips/:id', [auth, admin], Trip.update);
 
+  router.post('/bookings', auth, Booking.create);
+  // router.get('/bookings', auth, Booking.index);
+  // router.put('/bookings/:id', auth, Booking.update);
+  // router.delete('/bookings/:id', auth, Booking.update);
+
   app.use('/api/v1', router);
 };

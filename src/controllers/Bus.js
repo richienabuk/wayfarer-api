@@ -35,7 +35,7 @@ const Bus = {
       });
     } catch (e) {
       if (e.routine === '_bt_check_unique') {
-        return res.status(400).send({
+        return res.status(422).send({
           status: 'error',
           error: 'The bus with the plate number is already registered',
         });
