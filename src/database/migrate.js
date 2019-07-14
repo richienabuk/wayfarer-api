@@ -23,8 +23,8 @@ const createUserTable = () => {
         last_name VARCHAR(80) NOT NULL,
         password VARCHAR(128) NOT NULL,
         is_admin BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        created_at TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP NOT NULL
       )`;
 
   pool.query(queryText)
@@ -66,8 +66,8 @@ const createBusTable = () => {
         model VARCHAR(128) NOT NULL,
         year VARCHAR(128) NOT NULL,
         capacity INT NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        created_at TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP NOT NULL
       )`;
 
   pool.query(queryText)
@@ -130,8 +130,8 @@ const createTripTable = () => {
         trip_date DATE NOT NULL,
         status trip_status DEFAULT 'active',
         fare FLOAT NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP NOT NULL,
         FOREIGN KEY (bus_id) REFERENCES buses (id) ON DELETE CASCADE
       )`;
 
@@ -173,8 +173,8 @@ const createBookingTable = () => {
         trip_id INT NOT NULL,
         user_id INT NOT NULL,
         seat_number INT NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP NOT NULL,
         PRIMARY KEY (trip_id, user_id),
         UNIQUE (trip_id, seat_number),
         FOREIGN KEY (trip_id) REFERENCES trips (id) ON DELETE CASCADE,

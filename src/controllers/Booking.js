@@ -1,3 +1,4 @@
+import moment from 'moment';
 import db from '../database';
 import Seat from './utils/BookingHelper';
 
@@ -25,28 +26,29 @@ const Booking = {
       const bookedSeats = bookingRows.rows.map(seat => seat.seat_number);
       const remainingSeat = Seat.getAvailableSeat(bookedSeats, tripInfo.capacity);
 
+      if (!remainingSeat.length) return res.status(404).send({ status: 'error', error: 'the trip you intend to book is filled up, try another' });
+
       let seatNumber;
 
       if (!req.body.seat_number) {
         seatNumber = Seat.generateSeatNumber(remainingSeat);
-      }
-      // console.log(seatNumber);
-      // if (!remainingSeat.includes(req.body.seat_number)) {
-      //   res.status(400).send({ status: 'error', error: 'Seat is already taken' });
-      // }
-      else {
+      } else if (!remainingSeat.includes(Number(req.body.seat_number))) {
+        res.status(400).send({ status: 'error', error: 'Seat is already taken' });
+      } else {
         seatNumber = req.body.seat_number;
       }
 
       const createBookingQuery = `INSERT INTO 
-      bookings(trip_id, user_id, seat_number) 
-      VALUES($1,$2,$3) 
+      bookings(trip_id, user_id, seat_number, created_at, updated_at) 
+      VALUES($1,$2,$3,$4,$5) 
       returning *`;
 
       const booking = [
         req.body.trip_id,
         req.user.id,
         seatNumber,
+        moment(new Date()),
+        moment(new Date()),
       ];
       try {
         const bookedResult = await db.query(createBookingQuery, booking);
@@ -120,7 +122,7 @@ const Booking = {
       if (!rows[0]) {
         return res.status(404).send({
           status: 'error',
-          error: 'trip not found',
+          error: 'booking not found',
         });
       }
       return res.status(200).send(rows[0]);
@@ -147,7 +149,7 @@ const Booking = {
       }
       const values = [
         req.body.seat_number || rows[0].seat_number,
-        Date.now(),
+        moment(new Date()),
         req.params.id,
         req.user.id,
       ];

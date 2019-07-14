@@ -29,6 +29,7 @@ export default (app) => {
 
   router.post('/bookings', auth, Booking.create);
   router.get('/bookings', auth, Booking.index);
+  router.get('/bookings/:id', auth, Booking.show);
   router.put('/bookings/:id', auth, Booking.update);
   router.delete('/bookings/:id', auth, Booking.delete);
 
