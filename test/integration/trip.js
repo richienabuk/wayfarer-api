@@ -1,4 +1,3 @@
-/* eslint-disable no-return-await */
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/index';
@@ -6,6 +5,7 @@ import Auth from '../../src/controllers/utils/AuthHelper';
 
 const should = chai.should();
 chai.use(chaiHttp);
+const { expect } = chai;
 
 // const { expect } = chai;
 
@@ -65,6 +65,20 @@ describe('Trip CRUD operations', () => {
           res.body.should.have.property('data');
           busId = res.body.data.bus_id;
           res.body.should.have.property('status').eq('success');
+          done();
+        });
+    });
+
+    it('Should return error 422 when bus with plate number already exist', (done) => {
+      chai.request(app)
+        .post('/api/v1/buses')
+        .set('Content-Type', 'application/json')
+        .set('x-access-token', `${token}`)
+        .send(bus)
+        .end((e, res) => {
+          res.should.have.status(422);
+          res.body.should.have.property('status').eq('error');
+          expect(res.body.error).to.be.equal('The bus with the plate number is already registered');
           done();
         });
     });
