@@ -41,11 +41,8 @@ describe('User CRUD operations /api/v1/auth/', () => {
           should.exist(res.body);
           // validate
           res.should.have.status(201);
-          res.body.should.be.a('object');
           // eslint-disable-next-line no-unused-expressions
           expect(res.body.data.token).to.exist;
-          // eslint-disable-next-line no-unused-expressions
-          expect(res.body.data.user_id).to.exist;
           res.body.should.have.property('status').eq('success');
           done();
         });
@@ -106,7 +103,6 @@ describe('User CRUD operations /api/v1/auth/', () => {
         .end((e, res) => {
           should.exist(res.body);
           res.should.have.status(200);
-          res.body.should.be.a('object');
           // eslint-disable-next-line no-unused-expressions
           expect(res.body.data.token).to.exist;
           res.body.should.have.property('status').eq('success');
