@@ -1,3 +1,4 @@
+import moment from 'moment';
 import db from '../database';
 import Auth from './utils/AuthHelper';
 
@@ -20,8 +21,8 @@ const User = {
     const hashPassword = Auth.hashPassword(req.body.password);
 
     const createUserQuery = `INSERT INTO 
-      users(email, first_name, last_name, password, is_admin) 
-      VALUES($1,$2,$3,$4,$5) 
+      users(email, first_name, last_name, password, is_admin, created_at, updated_at)
+      VALUES($1,$2,$3,$4,$5,$6,$7)
       returning *`;
 
     const user = [
@@ -30,6 +31,8 @@ const User = {
       req.body.last_name,
       hashPassword,
       req.body.is_admin ? req.body.is_admin : false,
+      moment(new Date()),
+      moment(new Date()),
     ];
 
     try {
