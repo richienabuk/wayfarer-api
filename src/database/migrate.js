@@ -161,6 +161,53 @@ const dropTripTable = () => {
       pool.end();
     });
 };
+
+/**
+ * Create bookings table
+ */
+const createBookingTable = () => {
+  const queryText = `
+    CREATE TABLE IF NOT EXISTS
+      bookings(
+        id SERIAL NOT NULL,
+        trip_id INT NOT NULL,
+        user_id INT NOT NULL,
+        seat_number INT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (trip_id, user_id),
+        UNIQUE (trip_id, seat_number),
+        FOREIGN KEY (trip_id) REFERENCES trips (id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )`;
+
+  pool.query(queryText)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+};
+
+/**
+ * Drop bookings table
+ */
+const dropBookingTable = () => {
+  const queryText = 'DROP TABLE IF EXISTS bookings returning *';
+  pool.query(queryText)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+};
+
 /**
  * Create All Tables
  */
@@ -169,11 +216,13 @@ const createAllTables = () => {
   createBusTable();
   createEnumType();
   createTripTable();
+  createBookingTable();
 };
 /**
  * Drop All Tables
  */
 const dropAllTables = () => {
+  dropBookingTable();
   dropTripTable();
   dropBusTable();
   dropUserTable();
@@ -188,7 +237,9 @@ module.exports = {
   createUserTable,
   createBusTable,
   createTripTable,
+  createBookingTable,
   createAllTables,
+  dropBookingTable,
   dropTripTable,
   dropBusTable,
   dropUserTable,

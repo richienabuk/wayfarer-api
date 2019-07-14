@@ -6,19 +6,9 @@ const Auth = {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(12));
   },
 
-  // async hashPassword(password) {
-  //   const encryptedPassword = await bcrypt(password, bcrypt.genSalt(12));
-  //   return encryptedPassword;
-  // },
-
   comparePassword(hashPassword, password) {
     return bcrypt.compareSync(password, hashPassword);
   },
-
-  // async comparePassword(hashPassword, password) {
-  //   const compPassword = await bcrypt.compare(password, hashPassword);
-  //   return compPassword;
-  // },
 
   isValidEmail(email) {
     return /\S+@\S+\.\S+/.test(email);
