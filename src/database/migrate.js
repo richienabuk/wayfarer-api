@@ -176,6 +176,7 @@ const createBookingTable = () => {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         PRIMARY KEY (trip_id, user_id),
+        UNIQUE (trip_id, seat_number),
         FOREIGN KEY (trip_id) REFERENCES trips (id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
       )`;
