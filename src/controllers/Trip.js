@@ -3,17 +3,17 @@ import db from '../database';
 
 const Trip = {
   async create(req, res) {
-    if (!req.body.bus_id
-      || !req.body.origin
-      || !req.body.destination
-      || !req.body.trip_date
-      || !req.body.status
-      || !req.body.fare) {
-      return res.status(400).send({
-        status: 'error',
-        error: 'Some values are missing',
-      });
-    }
+    // if (!req.body.bus_id
+    //   || !req.body.origin
+    //   || !req.body.destination
+    //   || !req.body.trip_date
+    //   || !req.body.status
+    //   || !req.body.fare) {
+    //   return res.status(400).send({
+    //     status: 'error',
+    //     error: 'Some values are missing',
+    //   });
+    // }
 
     const checkBus = 'SELECT exists(SELECT 1 FROM buses WHERE id=$1 LIMIT 1)';
     const busInfo = await db.query(checkBus, [req.body.bus_id]);

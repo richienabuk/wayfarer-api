@@ -4,12 +4,12 @@ import Seat from './utils/BookingHelper';
 
 const Booking = {
   async create(req, res) {
-    if (!req.body.trip_id) {
-      return res.status(400).send({
-        status: 'error',
-        error: 'No trip selected',
-      });
-    }
+    // if (!req.body.trip_id) {
+    //   return res.status(400).send({
+    //     status: 'error',
+    //     error: 'No trip selected',
+    //   });
+    // }
 
     const checkTrip = 'SELECT * FROM trips JOIN buses on trips.bus_id = buses.id WHERE trips.id=$1';
     const currentBooking = 'SELECT seat_number FROM bookings where trip_id=$1';
