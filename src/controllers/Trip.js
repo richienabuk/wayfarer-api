@@ -38,6 +38,11 @@ const Trip = {
       const { rows } = await db.query(createTripQuery, trip);
       const data = {};
       data.trip_id = rows[0].id;
+      data.bus_id = rows[0].bus_id;
+      data.origin = rows[0].origin;
+      data.destination = rows[0].destination;
+      data.trip_date = rows[0].trip_date;
+      data.fare = rows[0].fare;
       return res.status(201).send({
         status: 'success',
         data,
@@ -54,7 +59,32 @@ const Trip = {
     const getAllQuery = 'SELECT * FROM trips WHERE status=$1';
     try {
       const { rows, rowCount } = await db.query(getAllQuery, ['active']);
-      const data = rows;
+
+      // eslint-disable-next-line camelcase
+      const data = rows.map((
+        {
+          // eslint-disable-next-line camelcase
+          id: trip_id,
+          // eslint-disable-next-line camelcase
+          bus_id,
+          origin,
+          destination,
+          // eslint-disable-next-line camelcase
+          trip_date,
+          fare,
+          // eslint-disable-next-line camelcase
+          created_at,
+        },
+      ) => ({
+        trip_id,
+        bus_id,
+        origin,
+        destination,
+        trip_date,
+        fare,
+        created_at,
+      }));
+
       // data.trip_id = rows.id;
       // data.capacity = rows.capacity;
       return res.status(200).send({
