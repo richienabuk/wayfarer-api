@@ -17,6 +17,7 @@ const Trip = {
 
     const checkBus = 'SELECT exists(SELECT 1 FROM buses WHERE id=$1 LIMIT 1)';
     const busInfo = await db.query(checkBus, [req.body.bus_id]);
+    console.log(busInfo)
     if (!busInfo.rows[0].exists) return res.status(404).send({ status: 'error', error: 'bus does not exist' });
 
     const createTripQuery = `INSERT INTO 

@@ -9,10 +9,10 @@ export default async (req, res, next) => {
    */
   let authToken;
   if (req.body.token) {
-    const [token] = req.body;
+    const { token } = req.body;
     authToken = token;
   } else if (req.param.token) {
-    const [token] = res.param;
+    const { token } = res.param;
     authToken = token;
   } else if (req.headers.authorization) {
     // eslint-disable-next-line prefer-destructuring
