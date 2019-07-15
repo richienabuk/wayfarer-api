@@ -18,9 +18,9 @@ chai.use(chaiHttp);
  */
 describe('Booking CRUD operations', () => {
   let token;
-  let busId = 11;
-  let tripId = 11;
-  let bookingId = 11;
+  let busId = 12;
+  let tripId = 12;
+  let bookingId = 12;
 
   before(async () => {
     const createUserQuery = `INSERT INTO
@@ -29,8 +29,8 @@ describe('Booking CRUD operations', () => {
       returning *`;
     const hashPassword = Auth.hashPassword('secret');
     const user = [
-      11,
-      'bookingtestt@mochar5.com',
+      12,
+      'bookingtest@mochar5.com',
       'Ikpa',
       'Uwem',
       hashPassword,
@@ -46,8 +46,8 @@ describe('Booking CRUD operations', () => {
       VALUES($1,$2,$3,$4,$5,$6,$7,$8)
       returning *`;
     const bus = [
-      11,
-      'AK111IKtP5r',
+      12,
+      'AK121IKtP5r',
       'Toyota',
       'Venza',
       '2019',
@@ -63,7 +63,7 @@ describe('Booking CRUD operations', () => {
       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
       returning *`;
     const trip = [
-      11,
+      12,
       busId,
       'Uyo - Akwa Ibom',
       'Oshodi - Lagos',
@@ -81,10 +81,10 @@ describe('Booking CRUD operations', () => {
     //   VALUES($1,$2,$3,$4,$5,$6)
     //   returning *`;
     // const booking = [
-    //   11,
-    //   11,
-    //   11,
-    //   11,
+    //   12,
+    //   12,
+    //   12,
+    //   12,
     //   moment(new Date()),
     //   moment(new Date()),
     // ];
@@ -93,7 +93,7 @@ describe('Booking CRUD operations', () => {
   });
 
   let booking = {
-    trip_id: 11,
+    trip_id: 12,
     seat_number: 8,
   };
 

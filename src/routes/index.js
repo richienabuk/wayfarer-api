@@ -5,6 +5,7 @@ import User from '../controllers/User';
 import Bus from '../controllers/Bus';
 import Trip from '../controllers/Trip';
 import Booking from '../controllers/Booking';
+import Search from '../controllers/Search';
 
 const router = express.Router();
 
@@ -27,11 +28,15 @@ export default (app) => {
   // router.get('/trips/:id', auth, Trip.show);
   router.put('/trips/:id', [auth, admin], Trip.update);
 
+  // Booking endpoints
   router.post('/bookings', auth, Booking.create);
   router.get('/bookings', auth, Booking.index);
   router.get('/bookings/:id', auth, Booking.show);
   router.put('/bookings/:id', auth, Booking.update);
   router.delete('/bookings/:id', auth, Booking.delete);
+
+  // Filters endpoint
+  router.get('/search', auth, Search.trips);
 
   app.use('/api/v1', router);
 };

@@ -89,7 +89,11 @@ const Trip = {
         req.params.id,
       ];
       const response = await db.query(updateOneQuery, values);
-      return res.status(200).send(response.rows[0]);
+      // response.rows[0]
+      return res.status(200).send({
+        status: 'success',
+        message: 'trip cancelled successfully',
+      });
     } catch (e) {
       return res.status(400).send(e);
     }
