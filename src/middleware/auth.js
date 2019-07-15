@@ -33,7 +33,7 @@ export default async (req, res, next) => {
     const text = 'SELECT * FROM users WHERE id = $1';
     const { rows } = await db.query(text, [decoded.userId]);
     if (!rows[0]) {
-      return res.status(400).send({ status: 'error', error: 'The token you provided is invalid' });
+      return res.status(401).send({ status: 'error', error: 'The token you provided is invalid' });
     }
     req.user = {
       id: decoded.userId,
@@ -45,6 +45,6 @@ export default async (req, res, next) => {
     // req.user = decoded;
     next();
   } catch (e) {
-    res.status(400).send({ status: 'error', error: e });
+    res.status(401).send({ status: 'error', error: e });
   }
 };
