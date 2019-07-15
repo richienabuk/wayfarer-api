@@ -127,10 +127,8 @@ describe('Booking CRUD operations', () => {
     });
   });
 
-
   describe('/api/v1/bookings Bookings', () => {
     it('should create new booking', (done) => {
-      // send request to the app
       chai.request(app)
         .post('/api/v1/bookings')
         .set('Content-Type', 'Application/json')
@@ -138,14 +136,13 @@ describe('Booking CRUD operations', () => {
         .send(booking)
         .end((e, res) => {
           should.exist(res.body);
-          // validate
           res.should.have.status(201);
           res.body.should.be.a('object');
           res.body.should.have.property('status').eq('success');
           done();
         });
     });
-    //
+
     // it('should create a new booking', (done) => {
     //   chai.request(app)
     //     .post('/api/v1/bookings')
