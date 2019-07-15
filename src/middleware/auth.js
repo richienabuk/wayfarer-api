@@ -7,15 +7,28 @@ export default async (req, res, next) => {
    * Check if token available
    * Returns 401
    */
-  const token = req.header('x-access-token');
-  if (!token) return res.status(401).send({ status: 'error', error: 'Access denied. No token provided.' });
+  let authToken;
+  if (req.body.token) {
+    const [token] = req.body;
+    authToken = token;
+  } else if (req.param.token) {
+    const [token] = res.param;
+    authToken = token;
+  } else if (req.headers.authorization) {
+    // eslint-disable-next-line prefer-destructuring
+    authToken = req.headers.authorization.split(' ')[1];
+  } else if (req.header('x-access-token')) {
+    authToken = req.header('x-access-token');
+  }
+
+  if (!authToken) return res.status(401).send({ status: 'error', error: 'Access denied. No token provided.' });
 
   /**
    * Verify header token by comparing with JWT_SECRET
    * Return user decoded details if true || 401
    */
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(authToken, process.env.JWT_SECRET);
 
     const text = 'SELECT * FROM users WHERE id = $1';
     const { rows } = await db.query(text, [decoded.userId]);
