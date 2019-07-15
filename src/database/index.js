@@ -1,7 +1,13 @@
 import pg from 'pg';
-import config from '../config';
+import dotenv from 'dotenv';
 
-const pool = new pg.Pool(config);
+dotenv.config();
+// import config from '../config';
+
+// const pool = new pg.Pool(config);
+const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
 pool.on('connect', () => {
   // console.log('connected to the Database');
