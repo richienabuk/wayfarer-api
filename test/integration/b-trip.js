@@ -1,6 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import moment from 'moment';
+import faker from 'faker';
 import app from '../../src/index';
 import Auth from '../../src/controllers/utils/AuthHelper';
 import db from '../../src/database';
@@ -21,6 +22,10 @@ const { expect } = chai;
  */
 describe('Trip CRUD operations', () => {
   let token;
+  const firstName = faker.name.firstName();
+  const lastName = faker.name.lastName();
+  const Mail = faker.internet.email();
+  const numb = faker.random.words(1);
 
   before(async () => {
     const createUserQuery = `INSERT INTO
@@ -29,9 +34,9 @@ describe('Trip CRUD operations', () => {
       returning *`;
     const hashPassword = Auth.hashPassword('secret');
     const user = [
-      'triptest@mocha.com',
-      'Ikpa',
-      'Uwem',
+      Mail,
+      firstName,
+      lastName,
       hashPassword,
       true,
       moment(new Date()),
@@ -43,7 +48,7 @@ describe('Trip CRUD operations', () => {
   });
 
   const bus = {
-    number_plate: '43TIM4I5O4',
+    number_plate: numb,
     manufacturer: 'Nabuk',
     model: 'First Love',
     year: '1945',
