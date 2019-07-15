@@ -4,8 +4,8 @@
   "description": "WayFarer API is a public bus transportation booking server built with Node JS, Express JS, and PostgreSQL",
   "main": "index.js",
   "scripts": {
-    "start": "node build/index.js",
     "dev": "nodemon --exec babel-node src/index.js",
+    "start": "node build/index.js",
     "test": "mocha --require @babel/register ./test --recursive --timeout 1000000 --exit",
     "build": "rm -rf ./build && babel -d ./build ./src -s",
     "migrate": "node src/database/migrate createAllTables",
