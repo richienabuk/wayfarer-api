@@ -1,8 +1,8 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import faker from 'faker';
 import app from '../../src/index';
 import Auth from '../../src/controllers/utils/AuthHelper';
-import faker from 'faker';
 
 const should = chai.should();
 chai.use(chaiHttp);
@@ -15,7 +15,7 @@ const numb = faker.random.words(1);
  * GET /api/v1/bookings
  * GET /api/v1/trips
  */
-describe('Booking CRUD operations', async () => {
+describe('Booking CRUD operations', () => {
   let token;
   let busId;
   let tripId;
@@ -23,6 +23,47 @@ describe('Booking CRUD operations', async () => {
 
   before(async () => {
     token = Auth.generateToken(1, true);
+  });
+
+  before((done) => {
+    const bus = {
+      number_plate: numb,
+      manufacturer: 'Nabuk',
+      model: 'First Love',
+      year: '1945',
+      capacity: 32,
+    };
+    chai.request(app)
+      .post('/api/v1/buses')
+      .set('Content-Type', 'application/json')
+      .set('x-access-token', `${token}`)
+      .send(bus)
+      .end((e, res) => {
+        should.exist(res.body);
+        busId = res.body.data.bus_id;
+        console.log(busId);
+        done();
+      });
+  });
+
+  before((done) => {
+    chai.request(app)
+      .post('/api/v1/trips')
+      .set('Content-Type', 'application/json')
+      .set('x-access-token', `${token}`)
+      .send({
+        bus_id: busId,
+        origin: 'Eket',
+        destination: 'Gwagwalada',
+        trip_date: '11-06-2019',
+        fare: 850.50,
+      })
+      .end((e, res) => {
+        const { id } = res.body.data;
+        tripId = id;
+        console.log(tripId);
+        done();
+      });
   });
 
   describe('/api/v1/trips Active trips', () => {
@@ -56,48 +97,6 @@ describe('Booking CRUD operations', async () => {
   });
 
   describe('/api/v1/bookings Bookings', () => {
-    const bus = {
-      number_plate: numb,
-      manufacturer: 'Nabuk',
-      model: 'First Love',
-      year: '1945',
-      capacity: 32,
-    };
-
-    before((done) => {
-      chai.request(app)
-        .post('/api/v1/buses')
-        .set('Content-Type', 'application/json')
-        .set('x-access-token', `${token}`)
-        .send(bus)
-        .end((e, res) => {
-          should.exist(res.body);
-          busId = res.body.data.bus_id;
-          console.log(busId);
-          done();
-        });
-    });
-
-    before((done) => {
-      chai.request(app)
-        .post('/api/v1/trips')
-        .set('Content-Type', 'application/json')
-        .set('x-access-token', `${token}`)
-        .send({
-          bus_id: busId,
-          origin: 'Eket',
-          destination: 'Gwagwalada',
-          trip_date: '11-06-2019',
-          fare: 850.50,
-        })
-        .end((e, res) => {
-          const { id } = res.body.data;
-          tripId = id;
-          console.log(tripId);
-          done();
-        });
-    });
-
     it('should create a new booking', (done) => {
       const booking = {
         trip_id: tripId,
