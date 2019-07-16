@@ -41,7 +41,6 @@ describe('Booking CRUD operations', () => {
       .end((e, res) => {
         should.exist(res.body);
         busId = res.body.data.bus_id;
-        console.log(busId);
         done();
       });
   });
@@ -61,7 +60,6 @@ describe('Booking CRUD operations', () => {
       .end((e, res) => {
         const { id } = res.body.data;
         tripId = id;
-        console.log(tripId);
         done();
       });
   });

@@ -20,6 +20,9 @@ const Mail = faker.internet.email();
  * POST /api/v1/auth/signin
  */
 describe('User CRUD operations /api/v1/auth/', () => {
+  // before(() => {
+  //   db.query('TRUNCATE bookings, trips, buses, users');
+  // })
   before(async () => {
     const createUserQuery = `INSERT INTO users(id, email, first_name, last_name, password, is_admin, created_at, updated_at) 
         SELECT $1,$2,$3,$4,$5,$6,$7,$8
