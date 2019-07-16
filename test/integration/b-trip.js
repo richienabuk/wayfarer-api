@@ -1,12 +1,12 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import faker from 'faker';
 import app from '../../src/index';
 import Auth from '../../src/controllers/utils/AuthHelper';
 
 const should = chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
+
 
 /**
  * Admin create a bus
@@ -18,42 +18,71 @@ const { expect } = chai;
  */
 describe('Trip CRUD operations', () => {
   let token;
-  let busId = 1;
-  const numb = faker.random.words(1);
-  let plate = 'ytdy8992'
-  plate = faker.random.number({ min: 578393, max: 399334044 })
+  let busId;
+  let tripId;
 
-  before(async () => {
-    token = Auth.generateToken(1, true);
-  });
-
+  before(async () => { token = Auth.generateToken(1, true); });
   before((done) => {
+    const bus = {
+      number_plate: Math.random().toString(36).substring(2, 15)
+        + Math.random().toString(36).substring(2, 15),
+      manufacturer: 'Lifera',
+      model: 'Alma',
+      year: '1999',
+      capacity: 16,
+    };
     chai.request(app)
       .post('/api/v1/buses')
       .set('Content-Type', 'application/json')
       .set('x-access-token', `${token}`)
+      .send(bus)
+      .end((e, res) => {
+        should.exist(res.body);
+        const { id } = res.body.data;
+        busId = id;
+        done();
+      });
+  });
+  before((done) => {
+    chai.request(app)
+      .post('/api/v1/trips')
+      .set('Content-Type', 'application/json')
+      .set('x-access-token', `${token}`)
       .send({
-        number_plate: plate,
-        manufacturer: 'Toyota',
-        model: 'First Love',
-        year: '1945',
-        capacity: 18,
+        bus_id: busId,
+        origin: 'Eket',
+        destination: 'Gwagwalada',
+        trip_date: '11-06-2019',
+        fare: 850.50,
       })
       .end((e, res) => {
-        busId = res.body.data.bus_id;
+        const { id } = res.body.data;
+        tripId = id;
         done();
       });
   });
 
+  //
+  // console.log(busId);
+  // // Polls `someCondition` every 1s
+  // const check = (done) => {
+  //   if (Number.isInteger(busId)) done();
+  //   else setTimeout(() => check(done), 100);
+  // };
+  //
+  // before((done) => { check(done); });
+  // console.log(busId);
+
   describe('/api/v1/buses Buses', () => {
     const bus = {
-      number_plate: numb,
+      number_plate: Math.random().toString(36).substring(2, 15)
+        + Math.random().toString(36).substring(2, 15),
       manufacturer: 'Nabuk',
       model: 'First Love',
       year: '1945',
       capacity: 32,
     };
-    console.log(plate);
+
     it('should create a new bus', (done) => {
       chai.request(app)
         .post('/api/v1/buses')
@@ -96,9 +125,63 @@ describe('Trip CRUD operations', () => {
           done();
         });
     });
+
+    it('Should fail to create a bus without token', (done) => {
+      chai.request(app)
+        .post('/api/v1/buses')
+        .set('Content-Type', 'application/json')
+        .set('x-access-token', '')
+        .send(bus)
+        .end((e, res) => {
+          res.should.have.status(401);
+          res.body.should.have.property('status').eq('error');
+          done();
+        });
+    });
+
+    it('Should fail to create a bus with insufficient field', (done) => {
+      bus.model = '';
+      bus.year = '';
+      chai.request(app)
+        .post('/api/v1/buses')
+        .set('Content-Type', 'application/json')
+        .set('x-access-token', `${token}`)
+        .send(bus)
+        .end((e, res) => {
+          res.should.have.status(400);
+          res.body.should.have.property('status').eq('error');
+          done();
+        });
+    });
   });
 
   describe('/api/v1/trips Trips', () => {
+    it('should create a trip', (done) => {
+      const trip = {
+        bus_id: busId,
+        origin: 'Eket',
+        destination: 'Gwagwalada',
+        trip_date: '11-06-2019',
+        fare: 850.50,
+      };
+      console.log('trip receives busid', busId);
+      // send request to the app
+      chai.request(app)
+        .post('/api/v1/trips')
+        .set('Content-Type', 'application/json')
+        .set('x-access-token', `${token}`)
+        .send(trip)
+        .end((e, res) => {
+          should.exist(res.body);
+          res.should.have.status(201);
+          res.body.should.be.a('object');
+          res.body.should.have.property('data');
+          // eslint-disable-next-line no-unused-expressions
+          res.body.should.have.property('status').eq('success');
+          done();
+        });
+    });
+
     it('should fail to create trip and return 401 for no user token supplied', (done) => {
       const trip = {
         bus_id: busId,
@@ -121,32 +204,7 @@ describe('Trip CRUD operations', () => {
         });
     });
 
-    // it('should create a trip', (done) => {
-    //   const trip = {
-    //     bus_id: busId,
-    //     origin: 'Eket',
-    //     destination: 'Gwagwalada',
-    //     trip_date: '11-06-2019',
-    //     fare: 850.50,
-    //   };
-    //   // send request to the app
-    //   chai.request(app)
-    //     .post('/api/v1/trips')
-    //     .set('Content-Type', 'application/json')
-    //     .set('x-access-token', `${token}`)
-    //     .send(trip)
-    //     .end((e, res) => {
-    //       should.exist(res.body);
-    //       res.should.have.status(201);
-    //       res.body.should.be.a('object');
-    //       res.body.should.have.property('data');
-    //       // eslint-disable-next-line no-unused-expressions
-    //       res.body.should.have.property('status').eq('success');
-    //       done();
-    //     });
-    // });
-
-    it('return 404 for bus that does not exist', (done) => {
+    it('should return 404 for bus does not exist', (done) => {
       const trip = {
         bus_id: 99966,
         origin: 'Eket',
@@ -170,6 +228,22 @@ describe('Trip CRUD operations', () => {
         });
     });
 
+    it('should update a trip and change status to cancelled', (done) => {
+      chai.request(app)
+        .patch(`/api/v1/trips/${tripId}`)
+        .set('Content-Type', 'application/json')
+        .set('x-access-token', `${token}`)
+        .send()
+        .end((e, res) => {
+          should.exist(res.body);
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          // eslint-disable-next-line no-unused-expressions
+          res.body.should.have.property('status').eq('success');
+          done();
+        });
+    });
+
     it('should not create a trip without complete field', (done) => {
       const trip = {
         bus_id: busId,
@@ -178,6 +252,7 @@ describe('Trip CRUD operations', () => {
         trip_date: '11-06-2019',
         fare: 850.50,
       };
+      console.log('receives tripId', tripId);
       chai.request(app)
         .post('/api/v1/trips')
         .set('Content-Type', 'application/json')
@@ -186,7 +261,6 @@ describe('Trip CRUD operations', () => {
         .end((e, res) => {
           should.exist(res.body);
           res.should.have.status(400);
-          res.body.should.be.a('object');
           res.body.should.have.property('error');
           done();
         });
@@ -203,18 +277,55 @@ describe('Trip CRUD operations', () => {
         });
     });
 
-    // it('should show all existing trips', (done) => {
-    //   chai.request(app)
-    //     .get('/api/v1/trips')
-    //     .set('Content-Type', 'application/json')
-    //     .set('x-access-token', `${token}`)
-    //     .end((e, res) => {
-    //       should.exist(res.body);
-    //       res.should.have.status(200);
-    //       res.body.should.be.a('object');
-    //       res.body.should.have.property('status').eq('success');
-    //       done();
-    //     });
-    // });
+    it('should show all existing trips', (done) => {
+      chai.request(app)
+        .get('/api/v1/trips')
+        .set('Content-Type', 'application/json')
+        .set('x-access-token', `${token}`)
+        .end((e, res) => {
+          should.exist(res.body);
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have.property('status').eq('success');
+          done();
+        });
+    });
+
+    it('should return 400 if no search parameter is given', (done) => {
+      chai.request(app)
+        .get('/api/v1/search')
+        .set('Content-Type', 'application/json')
+        .set('x-access-token', `${token}`)
+        .end((e, res) => {
+          should.exist(res.body);
+          res.should.have.status(400);
+          done();
+        });
+    });
+
+    it('should return 401 if no token is added to search', (done) => {
+      chai.request(app)
+        .get('/api/v1/search')
+        .set('Content-Type', 'application/json')
+        .set('x-access-token', '')
+        .end((e, res) => {
+          should.exist(res.body);
+          res.should.have.status(401);
+          done();
+        });
+    });
+
+    it('should return search and show existing trips', (done) => {
+      chai.request(app)
+        .get('/api/v1/search')
+        .set('Content-Type', 'application/json')
+        .set('x-access-token', `${token}`)
+        .send({ origin: 'a', destination: 'e' })
+        .end((e, res) => {
+          should.exist(res.body);
+          res.should.have.status(200);
+          done();
+        });
+    });
   });
 });

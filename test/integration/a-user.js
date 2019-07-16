@@ -13,6 +13,31 @@ const { expect } = chai;
 
 const Mail = faker.internet.email();
 
+
+describe('Fail test', () => {
+  before((done) => {
+    db.query('DELETE FROM users')
+      .then(() => {
+        db.query('DELETE FROM bookings')
+          .then(() => {
+            db.query('DELETE FROM trips')
+              .then(() => {
+                done();
+              })
+              .catch((err) => {
+                throw err;
+              });
+          })
+          .catch((err) => {
+            throw err;
+          });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  });
+});
+
 /**
  * User registration and login
  * Protected route check
@@ -20,11 +45,8 @@ const Mail = faker.internet.email();
  * POST /api/v1/auth/signin
  */
 describe('User CRUD operations /api/v1/auth/', () => {
-  // before(() => {
-  //   db.query('TRUNCATE bookings, trips, buses, users');
-  // })
   before(async () => {
-    const createUserQuery = `INSERT INTO users(id, email, first_name, last_name, password, is_admin, created_at, updated_at) 
+    const createUserQuery = `INSERT INTO users(id, email, first_name, last_name, password, is_admin, created_at, updated_at)
         SELECT $1,$2,$3,$4,$5,$6,$7,$8
     WHERE NOT EXISTS (
         SELECT 1 FROM users WHERE email='admin@andela.com'
@@ -47,28 +69,48 @@ describe('User CRUD operations /api/v1/auth/', () => {
     expect(app).to.be.a('function');
   });
 
+  it('should return 200 for landing page', (done) => {
+    chai.request(app)
+      .get('/')
+      .end((e, res) => {
+        should.exist(res.body);
+        res.should.have.status(200);
+        done();
+      });
+  });
+
+  it('should test auth welcome page', (done) => {
+    chai.request(app)
+      .get('/api/v1/auth')
+      .end((e, res) => {
+        should.exist(res.body);
+        res.should.have.status(200);
+        done();
+      });
+  });
+
   describe('POST /api/v1/auth/signup User registration', () => {
-    // it('should return 201 and token for valid credentials', (done) => {
-    // // send request to the app
-    //   chai.request(app)
-    //     .post('/api/v1/auth/signup')
-    //     .set('Content-Type', 'Application/json')
-    //     .send({
-    //       first_name: 'Michael',
-    //       last_name: 'Bush',
-    //       email: Mail,
-    //       password: 'secret',
-    //     })
-    //     .end((e, res) => {
-    //       should.exist(res.body);
-    //       // validate
-    //       res.should.have.status(201);
-    //       // eslint-disable-next-line no-unused-expressions
-    //       expect(res.body.data.token).to.exist;
-    //       res.body.should.have.property('status').eq('success');
-    //       done();
-    //     });
-    // });
+    it('should return 201 for signup and token for valid credentials', (done) => {
+    // send request to the app
+      chai.request(app)
+        .post('/api/v1/auth/signup')
+        .set('Content-Type', 'Application/json')
+        .send({
+          first_name: 'Michael',
+          last_name: 'Bush',
+          email: Mail,
+          password: 'secret',
+        })
+        .end((e, res) => {
+          should.exist(res.body);
+          // validate
+          res.should.have.status(201);
+          // eslint-disable-next-line no-unused-expressions
+          expect(res.body.data.token).to.exist;
+          res.body.should.have.property('status').eq('success');
+          done();
+        });
+    });
 
     it('should return 401 for invalid input', (done) => {
       chai.request(app)
@@ -94,7 +136,7 @@ describe('User CRUD operations /api/v1/auth/', () => {
         .send({
           first_name: 'Michael',
           last_name: 'Bush',
-          email: 'memail@',
+          email: 'mail@mmking',
           password: 'secret',
         })
         .end((e, res) => {
