@@ -11,8 +11,6 @@ const should = chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
 
-const firstName = faker.name.firstName();
-const lastName = faker.name.lastName();
 const Mail = faker.internet.email();
 
 /**
@@ -27,7 +25,6 @@ describe('User CRUD operations /api/v1/auth/', () => {
     //   users(id, email, first_name, last_name, password, is_admin, created_at, updated_at)
     //   VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING
     //   returning *`;
-    await db.query('DELETE FROM users');
 
     const createUserQuery = `INSERT INTO users(id, email, first_name, last_name, password, is_admin, created_at, updated_at) 
         SELECT $1,$2,$3,$4,$5,$6,$7,$8
@@ -49,8 +46,8 @@ describe('User CRUD operations /api/v1/auth/', () => {
   });
 
   const user = {
-    first_name: firstName,
-    last_name: lastName,
+    first_name: 'Michael',
+    last_name: 'Bush',
     email: Mail,
     password: 'secret',
     created_at: moment(new Date()),
