@@ -30,8 +30,7 @@ const Bus = {
     ];
     try {
       const { rows } = await db.query(createBusQuery, bus);
-      const data = {};
-      data.bus_id = rows[0].id;
+      const data = rows[0];
       return res.status(201).send({
         status: 'success',
         data,

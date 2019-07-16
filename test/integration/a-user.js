@@ -48,27 +48,27 @@ describe('User CRUD operations /api/v1/auth/', () => {
   });
 
   describe('POST /api/v1/auth/signup User registration', () => {
-    it('should return 201 and token for valid credentials', (done) => {
-    // send request to the app
-      chai.request(app)
-        .post('/api/v1/auth/signup')
-        .set('Content-Type', 'Application/json')
-        .send({
-          first_name: 'Michael',
-          last_name: 'Bush',
-          email: Mail,
-          password: 'secret',
-        })
-        .end((e, res) => {
-          should.exist(res.body);
-          // validate
-          res.should.have.status(201);
-          // eslint-disable-next-line no-unused-expressions
-          expect(res.body.data.token).to.exist;
-          res.body.should.have.property('status').eq('success');
-          done();
-        });
-    });
+    // it('should return 201 and token for valid credentials', (done) => {
+    // // send request to the app
+    //   chai.request(app)
+    //     .post('/api/v1/auth/signup')
+    //     .set('Content-Type', 'Application/json')
+    //     .send({
+    //       first_name: 'Michael',
+    //       last_name: 'Bush',
+    //       email: Mail,
+    //       password: 'secret',
+    //     })
+    //     .end((e, res) => {
+    //       should.exist(res.body);
+    //       // validate
+    //       res.should.have.status(201);
+    //       // eslint-disable-next-line no-unused-expressions
+    //       expect(res.body.data.token).to.exist;
+    //       res.body.should.have.property('status').eq('success');
+    //       done();
+    //     });
+    // });
 
     it('should return 401 for invalid input', (done) => {
       chai.request(app)
