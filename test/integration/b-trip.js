@@ -22,30 +22,50 @@ const { expect } = chai;
  */
 describe('Trip CRUD operations', () => {
   let token;
+  let busId;
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();
   const Mail = faker.internet.email();
   const numb = faker.random.words(1);
 
   before(async () => {
-    const createUserQuery = `INSERT INTO
-      users(email, first_name, last_name, password, is_admin, created_at, updated_at)
-      VALUES($1,$2,$3,$4,$5,$6,$7)
-      returning *`;
-    const hashPassword = Auth.hashPassword('secret');
-    const user = [
-      Mail,
-      firstName,
-      lastName,
-      hashPassword,
-      true,
-      moment(new Date()),
-      moment(new Date()),
-    ];
-
-    const { rows } = await db.query(createUserQuery, user);
-    token = Auth.generateToken(rows[0].id, rows[0].is_admin);
+    // const createUserQuery = `INSERT INTO
+    //   users(email, first_name, last_name, password, is_admin, created_at, updated_at)
+    //   VALUES($1,$2,$3,$4,$5,$6,$7)
+    //   returning *`;
+    // const hashPassword = Auth.hashPassword('secret');
+    // const user = [
+    //   Mail,
+    //   firstName,
+    //   lastName,
+    //   hashPassword,
+    //   true,
+    //   moment(new Date()),
+    //   moment(new Date()),
+    // ];
+    //
+    // const { rows } = await db.query(createUserQuery, user);
+    token = Auth.generateToken(1, true);
   });
+
+  // before((done) => {
+  //   chai.request(app)
+  //     .post('/api/v1/buses')
+  //     .set('Content-Type', 'application/json')
+  //     .set('x-access-token', `${token}`)
+  //     .send({
+  //       bus_id: 66,
+  //       origin: 'Eket',
+  //       destination: 'Gwagwalada',
+  //       trip_date: '11-06-2019',
+  //       fare: 850.50,
+  //     })
+  //     .end((e, res) => {
+  //       const { id } = res.body.data;
+  //       tripId = id;
+  //       done();
+  //     });
+  // });
 
   const bus = {
     number_plate: numb,
@@ -54,8 +74,6 @@ describe('Trip CRUD operations', () => {
     year: '1945',
     capacity: 32,
   };
-
-  let busId = 5;
 
   describe('/api/v1/buses Buses', () => {
     it('should create a new bus', (done) => {
@@ -69,8 +87,8 @@ describe('Trip CRUD operations', () => {
           res.should.have.status(201);
           res.body.should.be.a('object');
           res.body.should.have.property('data');
-          busId = res.body.data.bus_id;
           res.body.should.have.property('status').eq('success');
+          busId = res.body.data.bus_id;
           done();
         });
     });
@@ -103,20 +121,19 @@ describe('Trip CRUD operations', () => {
     });
   });
 
-  const trip = {
-    bus_id: busId,
-    origin: 'Eket',
-    destination: 'Gwagwalada',
-    trip_date: '11-06-2019',
-    fare: 850.50,
-    status: 'active',
-    created_at: moment(new Date()),
-    updated_at: moment(new Date()),
-  };
-
   describe('/api/v1/trips Trips', () => {
     it('should fail to create trip and return 401 for no user token supplied', (done) => {
-    // send request to the app
+      const trip = {
+        bus_id: busId,
+        origin: 'Eket',
+        destination: 'Gwagwalada',
+        trip_date: '11-06-2019',
+        fare: 850.50,
+        status: 'active',
+        created_at: moment(new Date()),
+        updated_at: moment(new Date()),
+      };
+      // send request to the app
       chai.request(app)
         .post('/api/v1/trips')
         .set('Content-Type', 'application/json')
@@ -129,26 +146,42 @@ describe('Trip CRUD operations', () => {
         });
     });
 
-    // it('should create a trip', (done) => {
-    // // send request to the app
-    //   chai.request(app)
-    //     .post('/api/v1/trips')
-    //     .set('Content-Type', 'application/json')
-    //     .set('x-access-token', `${token}`)
-    //     .send(trip)
-    //     .end((e, res) => {
-    //       should.exist(res.body);
-    //       res.should.have.status(201);
-    //       res.body.should.be.a('object');
-    //       res.body.should.have.property('data');
-    //       // eslint-disable-next-line no-unused-expressions
-    //       res.body.should.have.property('status').eq('success');
-    //       done();
-    //     });
-    // });
+    it('should create a trip', (done) => {
+      const trip = {
+        bus_id: busId,
+        origin: 'Eket',
+        destination: 'Gwagwalada',
+        trip_date: '11-06-2019',
+        fare: 850.50,
+      };
+      // send request to the app
+      chai.request(app)
+        .post('/api/v1/trips')
+        .set('Content-Type', 'application/json')
+        .set('x-access-token', `${token}`)
+        .send(trip)
+        .end((e, res) => {
+          should.exist(res.body);
+          res.should.have.status(201);
+          res.body.should.be.a('object');
+          res.body.should.have.property('data');
+          // eslint-disable-next-line no-unused-expressions
+          res.body.should.have.property('status').eq('success');
+          done();
+        });
+    });
 
     it('return 404 for bus that does not exist', (done) => {
-      trip.bus_id = 8888;
+      const trip = {
+        bus_id: 99966,
+        origin: 'Eket',
+        destination: 'Gwagwalada',
+        trip_date: '11-06-2019',
+        fare: 850.50,
+        status: 'active',
+        created_at: moment(new Date()),
+        updated_at: moment(new Date()),
+      };
       // send request to the app
       chai.request(app)
         .post('/api/v1/trips')
@@ -165,9 +198,13 @@ describe('Trip CRUD operations', () => {
     });
 
     it('should not create a trip without complete field', (done) => {
-      trip.origin = '';
-      trip.trip_date = '';
-      trip.bus_id = 1;
+      const trip = {
+        bus_id: busId,
+        origin: '',
+        destination: '',
+        trip_date: '11-06-2019',
+        fare: 850.50,
+      };
       chai.request(app)
         .post('/api/v1/trips')
         .set('Content-Type', 'application/json')
