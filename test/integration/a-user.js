@@ -3,6 +3,8 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import moment from 'moment';
 import faker from 'faker';
+import db from '../../src/database';
+import Auth from '../../src/controllers/utils/AuthHelper';
 import app from '../../src/index';
 
 const should = chai.should();
@@ -20,24 +22,29 @@ const Mail = faker.internet.email();
  * POST /api/v1/auth/signin
  */
 describe('User CRUD operations /api/v1/auth/', () => {
-  // before(async () => {
-  //   const createUserQuery = `INSERT INTO
-  //     users(id, email, first_name, last_name, password, is_admin, created_at, updated_at)
-  //     VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING
-  //     returning *`;
-  //   const hashPassword = Auth.hashPassword('secret');
-  //   const user = [
-  //     1,
-  //     'admin@emailadmin.com',
-  //     'Admin',
-  //     'Lastname',
-  //     hashPassword,
-  //     true,
-  //     moment(new Date()),
-  //     moment(new Date()),
-  //   ];
-  //   await db.query(createUserQuery, user);
-  // });
+  before(async () => {
+    // const createUserQuery = `INSERT INTO
+    //   users(id, email, first_name, last_name, password, is_admin, created_at, updated_at)
+    //   VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING
+    //   returning *`;
+    const createUserQuery = `INSERT INTO users(id, email, first_name, last_name, password, is_admin, created_at, updated_at) 
+        SELECT $1,$2,$3,$4,$5,$6,$7,$8
+    WHERE NOT EXISTS (
+        SELECT 1 FROM users WHERE email='admin@andela.com'
+    );`;
+    const hashPassword = Auth.hashPassword('password');
+    const user = [
+      1,
+      'admin@andela.com',
+      'Richie',
+      'Nabuk',
+      hashPassword,
+      true,
+      moment(new Date()),
+      moment(new Date()),
+    ];
+    await db.query(createUserQuery, user);
+  });
 
   const user = {
     first_name: firstName,

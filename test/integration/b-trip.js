@@ -23,9 +23,6 @@ const { expect } = chai;
 describe('Trip CRUD operations', () => {
   let token;
   let busId;
-  const firstName = faker.name.firstName();
-  const lastName = faker.name.lastName();
-  const Mail = faker.internet.email();
   const numb = faker.random.words(1);
 
   before(async () => {

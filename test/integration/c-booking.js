@@ -2,11 +2,13 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/index';
 import Auth from '../../src/controllers/utils/AuthHelper';
+import faker from 'faker';
 
 const should = chai.should();
 chai.use(chaiHttp);
 
 // const { expect } = chai;
+const numb = faker.random.words(1);
 
 /**
  * POST /api/v1/bookings
@@ -15,11 +17,12 @@ chai.use(chaiHttp);
  */
 describe('Booking CRUD operations', async () => {
   let token;
+  let busId;
   let tripId;
   let bookingId;
 
   before(async () => {
-    token = Auth.generateToken(164, true);
+    token = Auth.generateToken(1, true);
   });
 
   describe('/api/v1/trips Active trips', () => {
@@ -53,13 +56,38 @@ describe('Booking CRUD operations', async () => {
   });
 
   describe('/api/v1/bookings Bookings', () => {
+    const bus = {
+      number_plate: numb,
+      manufacturer: 'Nabuk',
+      model: 'First Love',
+      year: '1945',
+      capacity: 32,
+    };
+
+    before((done) => {
+      chai.request(app)
+        .post('/api/v1/buses')
+        .set('Content-Type', 'application/json')
+        .set('x-access-token', `${token}`)
+        .send(bus)
+        .end((e, res) => {
+          should.exist(res.body);
+          res.should.have.status(201);
+          res.body.should.be.a('object');
+          res.body.should.have.property('data');
+          res.body.should.have.property('status').eq('success');
+          busId = res.body.data.bus_id;
+          done();
+        });
+    });
+
     before((done) => {
       chai.request(app)
         .post('/api/v1/trips')
         .set('Content-Type', 'application/json')
         .set('x-access-token', `${token}`)
         .send({
-          bus_id: 66,
+          bus_id: busId,
           origin: 'Eket',
           destination: 'Gwagwalada',
           trip_date: '11-06-2019',
