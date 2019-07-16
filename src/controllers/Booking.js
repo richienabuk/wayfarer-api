@@ -107,12 +107,12 @@ const Booking = {
       const data = bookings.map((
         {
           // eslint-disable-next-line camelcase
-          id: booking_id, user_id, trip_id, bus_id, trip_date,
+          id, user_id, trip_id, bus_id, trip_date,
           // eslint-disable-next-line camelcase
           seat_number, first_name, last_name, email, created_at,
         },
       ) => ({
-        booking_id,
+        id,
         user_id,
         trip_id,
         bus_id,

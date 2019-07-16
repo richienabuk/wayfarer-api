@@ -143,11 +143,11 @@ const Trip = {
       // ];
       const response = await db.query(updateOneQuery);
       //     return res.status(200).send(response.rows[0]);
-      const reply = response.rows[0];
+      const data = response.rows[0];
       return res.status(200).send({
         status: 'success',
         message: 'trip cancelled successfully',
-        reply,
+        data,
       });
     } catch (e) {
       return res.status(400).send({
