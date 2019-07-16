@@ -12,7 +12,7 @@
     "migrate-refresh": "node src/database/migrate dropAllTables",
     "generate-lcov": "nyc report --reporter=text-lcov > lcov.info",
     "coveralls-coverage": "coveralls < lcov.info",
-    "codeclimate-coverage": "codeclimate-test-reporter < lcov.info",
+    "codeclimate-coverage": "set CODECLIMATE_REPO_TOKEN=875d01748dce4b92d885b819c4541cb35757d319f6e13ad5d8dbe1ce748f2509 && codeclimate-test-reporter < lcov.info",
     "coverage": "nyc npm test && npm run generate-lcov && npm run coveralls-coverage && npm run codeclimate-coverage"
   },
   "engines": {
@@ -48,6 +48,7 @@
     "@babel/register": "^7.4.4",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "codeclimate-test-reporter": "^0.5.1",
     "coveralls": "^3.0.5",
     "eslint": "^6.0.1",
     "eslint-config-airbnb-base": "^13.2.0",
@@ -55,6 +56,7 @@
     "make-runnable": "^1.3.6",
     "mocha": "^6.1.4",
     "mocha-lcov-reporter": "^1.3.0",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "nyc": "^14.1.1"
   }
 }
