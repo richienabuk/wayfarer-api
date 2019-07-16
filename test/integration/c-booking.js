@@ -72,11 +72,8 @@ describe('Booking CRUD operations', async () => {
         .send(bus)
         .end((e, res) => {
           should.exist(res.body);
-          res.should.have.status(201);
-          res.body.should.be.a('object');
-          res.body.should.have.property('data');
-          res.body.should.have.property('status').eq('success');
           busId = res.body.data.bus_id;
+          console.log(busId);
           done();
         });
     });
@@ -96,6 +93,7 @@ describe('Booking CRUD operations', async () => {
         .end((e, res) => {
           const { id } = res.body.data;
           tripId = id;
+          console.log(tripId);
           done();
         });
     });

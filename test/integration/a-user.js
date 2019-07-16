@@ -27,6 +27,8 @@ describe('User CRUD operations /api/v1/auth/', () => {
     //   users(id, email, first_name, last_name, password, is_admin, created_at, updated_at)
     //   VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING
     //   returning *`;
+    await db.query('DELETE FROM users');
+
     const createUserQuery = `INSERT INTO users(id, email, first_name, last_name, password, is_admin, created_at, updated_at) 
         SELECT $1,$2,$3,$4,$5,$6,$7,$8
     WHERE NOT EXISTS (
@@ -77,7 +79,21 @@ describe('User CRUD operations /api/v1/auth/', () => {
         });
     });
 
+    it('should return 401 for invalid input', (done) => {
+      user.first_name = '';
+      chai.request(app)
+        .post('/api/v1/auth/signup')
+        .set('Content-Type', 'Application/json')
+        .send(user)
+        .end((e, res) => {
+          res.should.have.status(401);
+          res.body.should.have.property('status').eq('error');
+          done();
+        });
+    });
+
     it('Should return error 422 when email already registered', (done) => {
+      user.first_name = 'firstname';
       chai.request(app)
         .post('/api/v1/auth/signup')
         .set('Content-Type', 'Application/json')
@@ -95,19 +111,6 @@ describe('User CRUD operations /api/v1/auth/', () => {
       chai.request(app)
         .post('/api/v1/auth/signup')
         .type('json')
-        .send(user)
-        .end((e, res) => {
-          res.should.have.status(401);
-          res.body.should.have.property('status').eq('error');
-          done();
-        });
-    });
-
-    it('should return 401 for invalid input', (done) => {
-      user.first_name = '';
-      chai.request(app)
-        .post('/api/v1/auth/signup')
-        .set('Content-Type', 'Application/json')
         .send(user)
         .end((e, res) => {
           res.should.have.status(401);
