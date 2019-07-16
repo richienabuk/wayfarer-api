@@ -112,16 +112,15 @@ const Trip = {
       //     error: 'trip not found',
       //   });
       // }
-      const values = [
-        req.body.status || 'cancelled',
-        moment(new Date()),
-        req.params.id,
-      ];
-      const response = await db.query(updateOneQuery, values);
-      let reply = response.rows[0];
-      return res.status(200).send({
-        status: 'success',
-        message: 'trip cancelled successfully',
+      // const values = [
+      //   req.body.status || rows[0].status,
+      //   moment(new Date()),
+      //   req.params.id,
+      // ];
+      db.query(`UPDATE trips SET status = 'cancelled' WHERE trip_id = '${req.params.id}' AND status = 'active'`).then((data) => {
+        res.status(200).send({ status: 'success', message: 'trip cancelled successfully', data });
+      }).catch((e) => {
+        res.status(500).send({ status: 'error', message: 'failed to cancel trip', e });
       });
     } catch (e) {
       return res.status(400).send(e);

@@ -26,13 +26,13 @@ export default (app) => {
   router.post('/trips', [auth, admin], Trip.create);
   router.get('/trips', auth, Trip.index);
   // router.get('/trips/:id', auth, Trip.show);
-  router.put('/trips/:id', [auth, admin], Trip.update);
+  router.patch('/trips/:id', [auth, admin], Trip.update);
 
   // Booking endpoints
   router.post('/bookings', auth, Booking.create);
   router.get('/bookings', auth, Booking.index);
   router.get('/bookings/:id', auth, Booking.show);
-  router.put('/bookings/:id', auth, Booking.update);
+  router.patch('/bookings/:id', auth, Booking.update);
   router.delete('/bookings/:id', auth, Booking.delete);
 
   // Filters endpoint
