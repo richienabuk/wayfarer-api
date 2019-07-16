@@ -1,3 +1,6 @@
+import Auth from '../controllers/utils/AuthHelper';
+import moment from '../../test/integration/a-user';
+
 const { Pool } = require('pg');
 const dotenv = require('dotenv');
 
@@ -26,6 +29,34 @@ const createUserTable = () => {
         created_at TIMESTAMP NOT NULL,
         updated_at TIMESTAMP NOT NULL
       )`;
+
+  pool.query(queryText)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+};
+
+
+const hashPassword = Auth.hashPassword('password');
+const user = [
+  1,
+  'admin@andela.com',
+  'Richie',
+  'Nabuk',
+  hashPassword,
+  true,
+  moment(new Date()),
+  moment(new Date()),
+];
+const createAdminUser = () => {
+  const queryText = `INSERT INTO
+      users(id, email, first_name, last_name, password, is_admin, created_at, updated_at)
+      VALUES(${user}) ON CONFLICT (email) DO NOTHING`;
 
   pool.query(queryText)
     .then((res) => {
@@ -213,6 +244,7 @@ const dropBookingTable = () => {
  */
 const createAllTables = () => {
   createUserTable();
+  createAdminUser();
   createBusTable();
   createEnumType();
   createTripTable();
@@ -235,6 +267,7 @@ pool.on('remove', () => {
 
 module.exports = {
   createUserTable,
+  createAdminUser,
   createBusTable,
   createTripTable,
   createBookingTable,

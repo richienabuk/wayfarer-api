@@ -30,7 +30,7 @@ const User = {
       req.body.first_name,
       req.body.last_name,
       hashPassword,
-      req.body.is_admin ? req.body.is_admin : false,
+      false,
       moment(new Date()),
       moment(new Date()),
     ];

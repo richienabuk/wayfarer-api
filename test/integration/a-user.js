@@ -4,8 +4,6 @@ import chaiHttp from 'chai-http';
 import moment from 'moment';
 import faker from 'faker';
 import app from '../../src/index';
-import Auth from '../../src/controllers/utils/AuthHelper';
-import db from '../../src/database';
 
 const should = chai.should();
 chai.use(chaiHttp);
@@ -22,24 +20,24 @@ const Mail = faker.internet.email();
  * POST /api/v1/auth/signin
  */
 describe('User CRUD operations /api/v1/auth/', () => {
-  before(async () => {
-    const createUserQuery = `INSERT INTO
-      users(id, email, first_name, last_name, password, is_admin, created_at, updated_at)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING
-      returning *`;
-    const hashPassword = Auth.hashPassword('secret');
-    const user = [
-      1,
-      'admin@emailadmin.com',
-      'Admin',
-      'Lastname',
-      hashPassword,
-      true,
-      moment(new Date()),
-      moment(new Date()),
-    ];
-    await db.query(createUserQuery, user);
-  });
+  // before(async () => {
+  //   const createUserQuery = `INSERT INTO
+  //     users(id, email, first_name, last_name, password, is_admin, created_at, updated_at)
+  //     VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING
+  //     returning *`;
+  //   const hashPassword = Auth.hashPassword('secret');
+  //   const user = [
+  //     1,
+  //     'admin@emailadmin.com',
+  //     'Admin',
+  //     'Lastname',
+  //     hashPassword,
+  //     true,
+  //     moment(new Date()),
+  //     moment(new Date()),
+  //   ];
+  //   await db.query(createUserQuery, user);
+  // });
 
   const user = {
     first_name: firstName,
@@ -118,8 +116,8 @@ describe('User CRUD operations /api/v1/auth/', () => {
   */
   describe('POST /api/v1/auth/signin', () => {
     it('should return 200 and token for valid credentials', (done) => {
-      user.email = 'admin@emailadmin.com';
-      user.password = 'secret';
+      user.email = 'admin@andela.com';
+      user.password = 'password';
       chai.request(app)
         .post('/api/v1/auth/signin')
         .set('Content-Type', 'Application/json')
