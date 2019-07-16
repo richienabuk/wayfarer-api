@@ -29,7 +29,7 @@ const Trip = {
       req.body.origin,
       req.body.destination,
       req.body.trip_date,
-      req.body.status,
+      'active',
       req.body.fare,
       moment(new Date()),
       moment(new Date()),
@@ -59,7 +59,6 @@ const Trip = {
     const getAllQuery = 'SELECT * FROM trips WHERE status=$1';
     try {
       const { rows, rowCount } = await db.query(getAllQuery, ['active']);
-
       // eslint-disable-next-line camelcase
       const data = rows.map((
         {
@@ -90,7 +89,7 @@ const Trip = {
       return res.status(200).send({
         status: 'success',
         data,
-        // rows,
+        rows,
         rowCount,
       });
     } catch (e) {
