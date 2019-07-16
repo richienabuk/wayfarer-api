@@ -101,30 +101,51 @@ const Trip = {
   },
 
   async update(req, res) {
-    const findOneQuery = 'SELECT * FROM trips WHERE id=$1';
-    const updateOneQuery = `UPDATE trips
-      SET status=$1 updated_at=$2, WHERE id=$3 returning *`;
-    try {
-      const { rows } = await db.query(findOneQuery, [req.params.id]);
-      // if (!rows[0]) {
-      //   return res.status(404).send({
-      //     status: 'error',
-      //     error: 'trip not found',
-      //   });
-      // }
-      // const values = [
-      //   req.body.status || rows[0].status,
-      //   moment(new Date()),
-      //   req.params.id,
-      // ];
-      db.query(`UPDATE trips SET status = 'cancelled' WHERE trip_id = '${req.params.id}' AND status = 'active'`).then((data) => {
-        res.status(200).send({ status: 'success', message: 'trip cancelled successfully', data });
-      }).catch((e) => {
-        res.status(500).send({ status: 'error', message: 'failed to cancel trip', e });
-      });
-    } catch (e) {
-      return res.status(400).send(e);
-    }
+    const tripId = req.params.id;
+
+    db.query(`SELECT * FROM trips WHERE status = 'Active' AND trip_id = '${tripId}' `).then((resp) => {
+      if (resp.rowCount <= 0) {
+        res.status(400).send({ status: 'error', message: 'Trip Not found' });
+      } else {
+        db.query(`UPDATE trips SET status = 'cancelled' WHERE trip_id = '${tripId}' AND status = 'Active'`).then((busData) => {
+          res.status(200).send({ status: 'success', message: 'Trip cancelled successfully', busData });
+        }).catch((e) => {
+          res.status(500).send({ status: 'error', message: 'Trip failed to cancel', e });
+        });
+      }
+    }).catch((e) => {
+      res.status(500).send({ status: 'error', message: 'Failed to fetch trips', e });
+    });
+
+
+    //
+    // const findOneQuery = 'SELECT * FROM trips WHERE id=$1';
+    // const updateOneQuery = `UPDATE trips
+    //   SET status=$1 updated_at=$2, WHERE id=$3 returning *`;
+    // try {
+    //   const { rows } = await db.query(findOneQuery, [req.params.id]);
+    //   // if (!rows[0]) {
+    //   //   return res.status(404).send({
+    //   //     status: 'error',
+    //   //     error: 'trip not found',
+    //   //   });
+    //   // }
+    //   // const values = [
+    //   //   req.body.status || rows[0].status,
+    //   //   moment(new Date()),
+    //   //   req.params.id,
+    //   // ];
+    // eslint-disable-next-line max-len
+    //   db.query(`UPDATE trips SET status = 'cancelled' WHERE trip_id = '${req.params.id}' AND status = 'active'`)
+    //   .then((data) => {
+    // eslint-disable-next-line max-len
+    //     res.status(200).send({ status: 'success', message: 'trip cancelled successfully', data });
+    //   }).catch((e) => {
+    //     res.status(500).send({ status: 'error', message: 'failed to cancel trip', e });
+    //   });
+    // } catch (e) {
+    //   return res.status(400).send(e);
+    // }
   },
 };
 
