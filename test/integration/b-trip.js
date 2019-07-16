@@ -62,17 +62,6 @@ describe('Trip CRUD operations', () => {
       });
   });
 
-  //
-  // console.log(busId);
-  // // Polls `someCondition` every 1s
-  // const check = (done) => {
-  //   if (Number.isInteger(busId)) done();
-  //   else setTimeout(() => check(done), 100);
-  // };
-  //
-  // before((done) => { check(done); });
-  // console.log(busId);
-
   describe('/api/v1/buses Buses', () => {
     const bus = {
       number_plate: Math.random().toString(36).substring(2, 15)
@@ -164,8 +153,6 @@ describe('Trip CRUD operations', () => {
         trip_date: '11-06-2019',
         fare: 850.50,
       };
-      console.log('trip receives busid', busId);
-      // send request to the app
       chai.request(app)
         .post('/api/v1/trips')
         .set('Content-Type', 'application/json')
@@ -252,7 +239,6 @@ describe('Trip CRUD operations', () => {
         trip_date: '11-06-2019',
         fare: 850.50,
       };
-      console.log('receives tripId', tripId);
       chai.request(app)
         .post('/api/v1/trips')
         .set('Content-Type', 'application/json')

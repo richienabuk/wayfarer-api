@@ -1,14 +1,10 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import faker from 'faker';
 import app from '../../src/index';
 import Auth from '../../src/controllers/utils/AuthHelper';
 
 const should = chai.should();
 chai.use(chaiHttp);
-
-// const { expect } = chai;
-const numb = faker.random.words(1);
 
 /**
  * POST /api/v1/bookings
@@ -16,6 +12,8 @@ const numb = faker.random.words(1);
  * GET /api/v1/trips
  */
 describe('Booking CRUD operations', () => {
+  const numb = Math.random().toString(36).substring(2, 15)
+    + Math.random().toString(36).substring(2, 15);
   let token;
   let busId;
   let tripId;
@@ -64,10 +62,6 @@ describe('Booking CRUD operations', () => {
         done();
       });
   });
-
-  // describe('POST API', () => {
-  //
-  // });
 
   describe('/api/v1/trips Active trips', () => {
     it('should not show existing trips to unauthenticated user', (done) => {

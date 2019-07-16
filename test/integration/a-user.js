@@ -1,8 +1,6 @@
-/* eslint-disable camelcase */
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import moment from 'moment';
-import faker from 'faker';
 import db from '../../src/database';
 import Auth from '../../src/controllers/utils/AuthHelper';
 import app from '../../src/index';
@@ -11,8 +9,9 @@ const should = chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
 
-const Mail = faker.internet.email();
-
+const randString = Math.random().toString(25).substring(2, 8)
+  + Math.random().toString(25).substring(2, 8)
+const Mail = `${randString}@mail.com`;
 
 describe('Fail test', () => {
   before((done) => {
