@@ -37,7 +37,7 @@ const Trip = {
     try {
       const { rows } = await db.query(createTripQuery, trip);
       const data = {};
-      data.trip_id = rows[0].id;
+      data.id = rows[0].id;
       data.bus_id = rows[0].bus_id;
       data.origin = rows[0].origin;
       data.destination = rows[0].destination;
