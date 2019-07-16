@@ -29,21 +29,6 @@ describe('Basic test', () => {
     ];
     await db.query(createUserQuery, user);
   });
-  // before((done) => {
-  //   db.query('DELETE FROM bookings').then(() => {
-  //     db.query('DELETE FROM trips').then(() => {
-  //       db.query('DELETE FROM users').then(() => {
-  //         done();
-  //       }).catch((err) => {
-  //         throw err;
-  //       });
-  //     }).catch((err) => {
-  //       throw err;
-  //     });
-  //   }).catch((err) => {
-  //     throw err;
-  //   });
-  // });
 
   it('should check that app server exists', () => {
     expect(app).to.be.a('function');

@@ -1,18 +1,14 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import moment from 'moment';
-import db from '../../src/database';
-import Auth from '../../src/controllers/utils/AuthHelper';
 import app from '../../src/index';
 
 const should = chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
 
-// const randString = Math.random().toString(25).substring(2, 8)
-//   + Math.random().toString(25).substring(2, 8)
-// const Mail = `${randString}@mail.com`;
-const Mail = 'aisdfj@ldf.com';
+const randString = Math.random().toString(25).substring(2, 8)
+  + Math.random().toString(25).substring(2, 8)
+const Mail = `${randString}@mail.com`;
 
 /**
  * User registration and login
@@ -30,17 +26,15 @@ describe('User CRUD operations /api/v1/auth/', () => {
         .send({
           first_name: 'Essien',
           last_name: 'Raphael',
-          email: 'firstuser@webmail.com',
+          email: Mail,
           password: 'secret1234',
         })
         .end((e, res) => {
           should.exist(res.body);
-          // validate
           res.should.have.status(201);
           // eslint-disable-next-line no-unused-expressions
-          // expect(res.body.data.token).to.exist;
-          // res.body.should.have.property('status').eq('success');
-          console.log(res.status, res.body);
+          expect(res.body.data.token).to.exist;
+          res.body.should.have.property('status').eq('success');
           done();
         });
     });
