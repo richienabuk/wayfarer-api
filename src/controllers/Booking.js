@@ -4,12 +4,12 @@ import Seat from './utils/BookingHelper';
 
 const Booking = {
   async create(req, res) {
-    // if (!req.body.trip_id) {
-    //   return res.status(400).send({
-    //     status: 'error',
-    //     error: 'No trip selected',
-    //   });
-    // }
+    if (!req.body.trip_id) {
+      return res.status(400).send({
+        status: 'error',
+        error: 'No trip selected',
+      });
+    }
 
     const checkTrip = 'SELECT * FROM trips JOIN buses on trips.bus_id = buses.id WHERE trips.id=$1';
     const currentBooking = 'SELECT seat_number FROM bookings where trip_id=$1';
@@ -214,7 +214,11 @@ const Booking = {
         req.user.id,
       ];
       const response = await db.query(updateOneQuery, values);
-      return res.status(200).send(response.rows[0]);
+      const data = response.rows[0]
+      return res.status(200).send({
+        status: 'success',
+        data,
+      });
     } catch (e) {
       return res.status(400).send(e);
     }
@@ -230,7 +234,7 @@ const Booking = {
       //     error: 'booking not found',
       //   });
       // }
-      let data = rows[0];
+      const data = rows[0];
       data.message = 'booking successfully deleted';
       return res.status(200).send({
         status: 'success',

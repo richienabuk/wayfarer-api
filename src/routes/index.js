@@ -39,4 +39,9 @@ export default (app) => {
   router.get('/search', auth, Search.trips);
 
   app.use('/api/v1', router);
+
+  app.get('/', (req, res) => res.send({
+    status: 'success',
+    message: 'Welcome to wayfarer API, visit this link for the documentation: https://documenter.getpostman.com/view/3054493/SVSHsAEG'
+  }));
 };

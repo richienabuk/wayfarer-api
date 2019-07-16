@@ -3,16 +3,14 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import moment from 'moment';
 import faker from 'faker';
+import db from '../../src/database';
+import Auth from '../../src/controllers/utils/AuthHelper';
 import app from '../../src/index';
-// import db from '../../src/database';
-// import auth from '../../src/middleware/auth';
 
 const should = chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
 
-const firstName = faker.name.firstName();
-const lastName = faker.name.lastName();
 const Mail = faker.internet.email();
 
 /**
@@ -22,56 +20,66 @@ const Mail = faker.internet.email();
  * POST /api/v1/auth/signin
  */
 describe('User CRUD operations /api/v1/auth/', () => {
-  const user = {
-    first_name: firstName,
-    last_name: lastName,
-    email: Mail,
-    password: 'secret',
-    created_at: moment(new Date()),
-    updated_at: moment(new Date()),
-  };
+  // before(() => {
+  //   db.query('TRUNCATE bookings, trips, buses, users');
+  // })
+  before(async () => {
+    const createUserQuery = `INSERT INTO users(id, email, first_name, last_name, password, is_admin, created_at, updated_at) 
+        SELECT $1,$2,$3,$4,$5,$6,$7,$8
+    WHERE NOT EXISTS (
+        SELECT 1 FROM users WHERE email='admin@andela.com'
+    );`;
+    const hashPassword = Auth.hashPassword('password');
+    const user = [
+      1,
+      'admin@andela.com',
+      'Richie',
+      'Nabuk',
+      hashPassword,
+      true,
+      moment(new Date()),
+      moment(new Date()),
+    ];
+    await db.query(createUserQuery, user);
+  });
 
   it('should check that app server exists', () => {
     expect(app).to.be.a('function');
   });
 
   describe('POST /api/v1/auth/signup User registration', () => {
-    it('should return 201 and token for valid credentials', (done) => {
-    // send request to the app
+    // it('should return 201 and token for valid credentials', (done) => {
+    // // send request to the app
+    //   chai.request(app)
+    //     .post('/api/v1/auth/signup')
+    //     .set('Content-Type', 'Application/json')
+    //     .send({
+    //       first_name: 'Michael',
+    //       last_name: 'Bush',
+    //       email: Mail,
+    //       password: 'secret',
+    //     })
+    //     .end((e, res) => {
+    //       should.exist(res.body);
+    //       // validate
+    //       res.should.have.status(201);
+    //       // eslint-disable-next-line no-unused-expressions
+    //       expect(res.body.data.token).to.exist;
+    //       res.body.should.have.property('status').eq('success');
+    //       done();
+    //     });
+    // });
+
+    it('should return 401 for invalid input', (done) => {
       chai.request(app)
         .post('/api/v1/auth/signup')
         .set('Content-Type', 'Application/json')
-        .send(user)
-        .end((e, res) => {
-          should.exist(res.body);
-          // validate
-          res.should.have.status(201);
-          // eslint-disable-next-line no-unused-expressions
-          expect(res.body.data.token).to.exist;
-          res.body.should.have.property('status').eq('success');
-          done();
-        });
-    });
-
-    it('Should return error 422 when email already registered', (done) => {
-      chai.request(app)
-        .post('/api/v1/auth/signup')
-        .set('Content-Type', 'Application/json')
-        .send(user)
-        .end((e, res) => {
-          expect(res).to.have.status(422);
-          res.body.should.have.property('status').eq('error');
-          expect(res.body.error).to.be.equal('User with that EMAIL already exist');
-          done();
-        });
-    });
-
-    it('should return error 401 for invalid email', (done) => {
-      user.email = 'uwemy@do';
-      chai.request(app)
-        .post('/api/v1/auth/signup')
-        .type('json')
-        .send(user)
+        .send({
+          first_name: '',
+          last_name: 'Bush',
+          email: Mail,
+          password: 'secret',
+        })
         .end((e, res) => {
           res.should.have.status(401);
           res.body.should.have.property('status').eq('error');
@@ -79,12 +87,16 @@ describe('User CRUD operations /api/v1/auth/', () => {
         });
     });
 
-    it('should return 401 for invalid input', (done) => {
-      user.first_name = '';
+    it('should return error 401 for invalid email', (done) => {
       chai.request(app)
         .post('/api/v1/auth/signup')
-        .set('Content-Type', 'Application/json')
-        .send(user)
+        .type('json')
+        .send({
+          first_name: 'Michael',
+          last_name: 'Bush',
+          email: 'memail@',
+          password: 'secret',
+        })
         .end((e, res) => {
           res.should.have.status(401);
           res.body.should.have.property('status').eq('error');
@@ -99,12 +111,13 @@ describe('User CRUD operations /api/v1/auth/', () => {
   */
   describe('POST /api/v1/auth/signin', () => {
     it('should return 200 and token for valid credentials', (done) => {
-      user.email = 'uwem@nigeria.com';
-      user.password = 'secret';
       chai.request(app)
         .post('/api/v1/auth/signin')
         .set('Content-Type', 'Application/json')
-        .send(user)
+        .send({
+          email: 'admin@andela.com',
+          password: 'password',
+        })
         .end((e, res) => {
           should.exist(res.body);
           res.should.have.status(200);
@@ -116,11 +129,13 @@ describe('User CRUD operations /api/v1/auth/', () => {
     });
 
     it('should return error 401 for invalid email for signin', (done) => {
-      user.email = 'notvalidmail';
       chai.request(app)
         .post('/api/v1/auth/signin')
         .set('Content-Type', 'Application/json')
-        .send(user)
+        .send({
+          email: 'admin@andel',
+          password: 'password',
+        })
         .end((e, res) => {
           expect(res).to.have.status(401);
           res.body.should.have.property('status').eq('error');
@@ -129,12 +144,13 @@ describe('User CRUD operations /api/v1/auth/', () => {
     });
 
     it('should return error 401 for invalid credentials', (done) => {
-      user.email = 'uwemy@doe.com';
-      user.password = 'invalidPassword';
       chai.request(app)
         .post('/api/v1/auth/signin')
         .set('Content-Type', 'Application/json')
-        .send(user)
+        .send({
+          email: 'admin@andela.com',
+          password: 'passwrr6ord',
+        })
         .end((e, res) => {
           should.exist(res.body);
           res.should.have.status(401);

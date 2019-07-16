@@ -1,15 +1,14 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import moment from 'moment';
+import faker from 'faker';
 import app from '../../src/index';
 import Auth from '../../src/controllers/utils/AuthHelper';
-import db from '../../src/database';
-
 
 const should = chai.should();
 chai.use(chaiHttp);
 
 // const { expect } = chai;
+const numb = faker.random.words(1);
 
 /**
  * POST /api/v1/bookings
@@ -18,99 +17,70 @@ chai.use(chaiHttp);
  */
 describe('Booking CRUD operations', () => {
   let token;
-  let busId = 11;
-  let tripId = 11;
-  let bookingId = 11;
+  // let busId = 1;
+  let tripId = 1;
+  // let bookingId = 1;
 
   before(async () => {
-    const createUserQuery = `INSERT INTO
-      users(id, email, first_name, last_name, password, is_admin, created_at, updated_at)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8)
-      returning *`;
-    const hashPassword = Auth.hashPassword('secret');
-    const user = [
-      11,
-      'bookingtestt@mochar5.com',
-      'Ikpa',
-      'Uwem',
-      hashPassword,
-      false,
-      moment(new Date()),
-      moment(new Date()),
-    ];
-    const { rows } = await db.query(createUserQuery, user);
-    token = Auth.generateToken(rows[0].id, rows[0].is_admin);
-
-    const createBusQuery = `INSERT INTO
-      buses(id, number_plate, manufacturer, model, year, capacity, created_at, updated_at)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8)
-      returning *`;
-    const bus = [
-      11,
-      'AK111IKtP5r',
-      'Toyota',
-      'Venza',
-      '2019',
-      14,
-      moment(new Date()),
-      moment(new Date()),
-    ];
-    const busRows = await db.query(createBusQuery, bus);
-    busId = busRows.rows[0].id;
-
-    const createTripQuery = `INSERT INTO
-      trips(id, bus_id, origin, destination, trip_date, status, fare, created_at, updated_at)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
-      returning *`;
-    const trip = [
-      11,
-      busId,
-      'Uyo - Akwa Ibom',
-      'Oshodi - Lagos',
-      '10-10-2019',
-      'active',
-      50.55,
-      moment(new Date()),
-      moment(new Date()),
-    ];
-    const TripRows = await db.query(createTripQuery, trip);
-    tripId = TripRows.rows[0].id;
-
-    // const createBookingQuery = `INSERT INTO
-    //   bookings(id, trip_id, user_id, seat_number, created_at, updated_at)
-    //   VALUES($1,$2,$3,$4,$5,$6)
-    //   returning *`;
-    // const booking = [
-    //   11,
-    //   11,
-    //   11,
-    //   11,
-    //   moment(new Date()),
-    //   moment(new Date()),
-    // ];
-    // const BookingRows = await db.query(createBookingQuery, booking);
-    // bookingId = BookingRows.rows[0].id;
+    token = Auth.generateToken(1, true);
   });
 
-  let booking = {
-    trip_id: 11,
-    seat_number: 8,
-  };
+  // before((done) => {
+  //   const bus = {
+  //     number_plate: numb,
+  //     manufacturer: 'Nabuk',
+  //     model: 'First Love',
+  //     year: '1945',
+  //     capacity: 32,
+  //   };
+  //   chai.request(app)
+  //     .post('/api/v1/buses')
+  //     .set('Content-Type', 'application/json')
+  //     .set('x-access-token', `${token}`)
+  //     .send(bus)
+  //     .end((e, res) => {
+  //       should.exist(res.body);
+  //       const { id } = res.body.data;
+  //       busId = id;
+  //       console.log(busId);
+  //       console.log(res.body.data);
+  //       done();
+  //     });
+  // });
+
+  // before((done) => {
+  //   chai.request(app)
+  //     .post('/api/v1/trips')
+  //     .set('Content-Type', 'application/json')
+  //     .set('x-access-token', `${token}`)
+  //     .send({
+  //       bus_id: busId,
+  //       origin: 'Eket',
+  //       destination: 'Gwagwalada',
+  //       trip_date: '11-06-2019',
+  //       fare: 850.50,
+  //     })
+  //     .end((e, res) => {
+  //       const { id } = res.body.data;
+  //       tripId = id;
+  //       done();
+  //     });
+  // });
 
   describe('/api/v1/trips Active trips', () => {
-    it('should show all existing trips to authenticated user', (done) => {
-      chai.request(app)
-        .get('/api/v1/trips')
-        .set('Content-Type', 'application/json')
-        .set('x-access-token', `${token}`)
-        .end((e, res) => {
-          should.exist(res.body);
-          res.should.have.status(200);
-          res.body.should.be.a('object');
-          res.body.should.have.property('status').eq('success');
-          done();
-        });
-    });
+    // it('should show all existing trips to authenticated user', (done) => {
+    //   chai.request(app)
+    //     .get('/api/v1/trips')
+    //     .set('Content-Type', 'application/json')
+    //     .set('x-access-token', `${token}`)
+    //     .end((e, res) => {
+    //       should.exist(res.body);
+    //       res.should.have.status(200);
+    //       res.body.should.be.a('object');
+    //       res.body.should.have.property('status').eq('success');
+    //       done();
+    //     });
+    // });
 
     it('should not show existing trips to unauthenticated user', (done) => {
       chai.request(app)
@@ -128,30 +98,16 @@ describe('Booking CRUD operations', () => {
   });
 
   describe('/api/v1/bookings Bookings', () => {
-    // it('should create new booking', (done) => {
-    //   chai.request(app)
-    //     .post('/api/v1/bookings')
-    //     .set('Content-Type', 'Application/json')
-    //     .set('x-access-token', `${token}`)
-    //     .send(booking)
-    //     .end((e, res) => {
-    //       should.exist(res.body);
-    //       res.should.have.status(201);
-    //       res.body.should.be.a('object');
-    //       res.body.should.have.property('status').eq('success');
-    //       done();
-    //     });
-    // });
-
     // it('should create a new booking', (done) => {
+    //   const booking = {
+    //     trip_id: tripId,
+    //     seat_number: 12,
+    //   };
     //   chai.request(app)
     //     .post('/api/v1/bookings')
     //     .set('Content-Type', 'application/json')
     //     .set('x-access-token', `${token}`)
-    //     .send({
-    //       trip_id: '5',
-    //       // seat_number: 8,
-    //     })
+    //     .send(booking)
     //     .end((e, res) => {
     //       if (e) throw e;
     //       should.exist(res.body);
@@ -159,15 +115,18 @@ describe('Booking CRUD operations', () => {
     //       res.body.should.be.a('object');
     //       res.body.should.have.property('data');
     //       res.body.should.have.property('status').eq('success');
+    //       const { id } = res.body.data;
+    //       bookingId = id;
     //       done();
     //     });
     // });
 
-
     // it('should update seat number', (done) => {
-    //   booking.seat_number = 5;
+    //   const booking = {
+    //     seat_number: 5,
+    //   };
     //   chai.request(app)
-    //     .put(`/api/v1/bookings/${bookingId}`)
+    //     .patch(`/api/v1/bookings/${bookingId}`)
     //     .set('Content-Type', 'Application/json')
     //     .set('x-access-token', `${token}`)
     //     .send(booking)
@@ -185,14 +144,18 @@ describe('Booking CRUD operations', () => {
     //     .delete(`/api/v1/bookings/${bookingId}`)
     //     .set('Content-Type', 'application/json')
     //     .set('x-access-token', `${token}`)
-    //     .send(booking)
+    //     .send()
     //     .end((e, res) => {
-    //       res.should.have.status(204);
+    //       res.should.have.status(200);
     //       done();
     //     });
     // });
 
     it('should not create a booking if no token is supplied', (done) => {
+      const booking = {
+        trip_id: tripId,
+        seat_number: 10,
+      };
       chai.request(app)
         .post('/api/v1/bookings')
         .set('Content-Type', 'application/json')
@@ -208,7 +171,7 @@ describe('Booking CRUD operations', () => {
     });
 
     it('should not create booking if no trip is selected', (done) => {
-      booking.trip_id = '';
+      const booking = {};
       chai.request(app)
         .post('/api/v1/bookings')
         .set('Content-Type', 'application/json')
@@ -217,7 +180,6 @@ describe('Booking CRUD operations', () => {
         .end((e, res) => {
           should.exist(res.body);
           res.should.have.status(400);
-          res.body.should.be.a('object');
           res.body.should.have.property('status').eq('error');
           done();
         });
