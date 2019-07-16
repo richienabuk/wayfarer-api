@@ -4,13 +4,10 @@ import moment from 'moment';
 import faker from 'faker';
 import app from '../../src/index';
 import Auth from '../../src/controllers/utils/AuthHelper';
-import db from '../../src/database';
 
 const should = chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
-
-// const { expect } = chai;
 
 /**
  * Admin create a bus
@@ -24,55 +21,38 @@ describe('Trip CRUD operations', () => {
   let token;
   let busId;
   const numb = faker.random.words(1);
+  const plate = faker.random.number({ min: 578393, max: 399334044 })
 
   before(async () => {
-    // const createUserQuery = `INSERT INTO
-    //   users(email, first_name, last_name, password, is_admin, created_at, updated_at)
-    //   VALUES($1,$2,$3,$4,$5,$6,$7)
-    //   returning *`;
-    // const hashPassword = Auth.hashPassword('secret');
-    // const user = [
-    //   Mail,
-    //   firstName,
-    //   lastName,
-    //   hashPassword,
-    //   true,
-    //   moment(new Date()),
-    //   moment(new Date()),
-    // ];
-    //
-    // const { rows } = await db.query(createUserQuery, user);
     token = Auth.generateToken(1, true);
   });
 
-  // before((done) => {
-  //   chai.request(app)
-  //     .post('/api/v1/buses')
-  //     .set('Content-Type', 'application/json')
-  //     .set('x-access-token', `${token}`)
-  //     .send({
-  //       bus_id: 66,
-  //       origin: 'Eket',
-  //       destination: 'Gwagwalada',
-  //       trip_date: '11-06-2019',
-  //       fare: 850.50,
-  //     })
-  //     .end((e, res) => {
-  //       const { id } = res.body.data;
-  //       tripId = id;
-  //       done();
-  //     });
-  // });
-
-  const bus = {
-    number_plate: numb,
-    manufacturer: 'Nabuk',
-    model: 'First Love',
-    year: '1945',
-    capacity: 32,
-  };
+  before((done) => {
+    chai.request(app)
+      .post('/api/v1/buses')
+      .set('Content-Type', 'application/json')
+      .set('x-access-token', `${token}`)
+      .send({
+        number_plate: plate,
+        manufacturer: 'Toyota',
+        model: 'First Love',
+        year: '1945',
+        capacity: 18,
+      })
+      .end((e, res) => {
+        busId = res.body.data.bus_id;
+        done();
+      });
+  });
 
   describe('/api/v1/buses Buses', () => {
+    const bus = {
+      number_plate: numb,
+      manufacturer: 'Nabuk',
+      model: 'First Love',
+      year: '1945',
+      capacity: 32,
+    };
     it('should create a new bus', (done) => {
       chai.request(app)
         .post('/api/v1/buses')
@@ -85,7 +65,6 @@ describe('Trip CRUD operations', () => {
           res.body.should.be.a('object');
           res.body.should.have.property('data');
           res.body.should.have.property('status').eq('success');
-          busId = res.body.data.bus_id;
           done();
         });
     });
