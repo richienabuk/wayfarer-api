@@ -8,21 +8,21 @@ chai.use(chaiHttp);
 const should = chai.should();
 
 describe('Basic test', () => {
-  before((done) => {
-    db.query('DELETE FROM users').then(() => {
-      db.query('DELETE FROM bookings').then(() => {
-        db.query('DELETE FROM trips').then(() => {
-          done();
-        }).catch((err) => {
-          throw err;
-        });
-      }).catch((err) => {
-        throw err;
-      });
-    }).catch((err) => {
-      throw err;
-    });
-  });
+  // before((done) => {
+  //   db.query('DELETE FROM bookings').then(() => {
+  //     db.query('DELETE FROM trips').then(() => {
+  //       db.query('DELETE FROM users').then(() => {
+  //         done();
+  //       }).catch((err) => {
+  //         throw err;
+  //       });
+  //     }).catch((err) => {
+  //       throw err;
+  //     });
+  //   }).catch((err) => {
+  //     throw err;
+  //   });
+  // });
 
   it('should check that app server exists', () => {
     expect(app).to.be.a('function');

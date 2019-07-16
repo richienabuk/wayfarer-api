@@ -9,10 +9,10 @@ const should = chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
 
-// const randString = Math.random().toString(25).substring(2, 8)
-//   + Math.random().toString(25).substring(2, 8)
-// const Mail = `${randString}@mail.com`;
-const Mail = 'aisdfj@ldf.com';
+const randString = Math.random().toString(25).substring(2, 8)
+  + Math.random().toString(25).substring(2, 8)
+const Mail = `${randString}@mail.com`;
+// const Mail = 'aisdfj@ldf.com';
 
 /**
  * User registration and login
