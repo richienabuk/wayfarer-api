@@ -230,9 +230,11 @@ const Booking = {
       //     error: 'booking not found',
       //   });
       // }
+      let data = rows[0];
+      data.message = 'booking successfully deleted';
       return res.status(200).send({
         status: 'success',
-        error: 'booking successfully deleted',
+        data,
       });
     } catch (e) {
       return res.status(400).send(e);
