@@ -1,6 +1,5 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import moment from 'moment';
 import faker from 'faker';
 import app from '../../src/index';
 import Auth from '../../src/controllers/utils/AuthHelper';
@@ -106,8 +105,6 @@ describe('Trip CRUD operations', () => {
         trip_date: '11-06-2019',
         fare: 850.50,
         status: 'active',
-        created_at: moment(new Date()),
-        updated_at: moment(new Date()),
       };
       // send request to the app
       chai.request(app)
@@ -155,8 +152,6 @@ describe('Trip CRUD operations', () => {
         trip_date: '11-06-2019',
         fare: 850.50,
         status: 'active',
-        created_at: moment(new Date()),
-        updated_at: moment(new Date()),
       };
       // send request to the app
       chai.request(app)

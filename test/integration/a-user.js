@@ -55,8 +55,6 @@ describe('User CRUD operations /api/v1/auth/', () => {
           last_name: 'Bush',
           email: Mail,
           password: 'secret',
-          created_at: moment(new Date()),
-          updated_at: moment(new Date()),
         })
         .end((e, res) => {
           should.exist(res.body);
@@ -78,8 +76,6 @@ describe('User CRUD operations /api/v1/auth/', () => {
           last_name: 'Bush',
           email: Mail,
           password: 'secret',
-          created_at: moment(new Date()),
-          updated_at: moment(new Date()),
         })
         .end((e, res) => {
           res.should.have.status(401);
@@ -97,8 +93,6 @@ describe('User CRUD operations /api/v1/auth/', () => {
           last_name: 'Bush',
           email: 'memail@',
           password: 'secret',
-          created_at: moment(new Date()),
-          updated_at: moment(new Date()),
         })
         .end((e, res) => {
           res.should.have.status(401);
