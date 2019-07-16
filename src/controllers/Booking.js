@@ -4,12 +4,12 @@ import Seat from './utils/BookingHelper';
 
 const Booking = {
   async create(req, res) {
-    if (!req.body.trip_id) {
-      return res.status(400).send({
-        status: 'error',
-        error: 'No trip selected',
-      });
-    }
+    // if (!req.body.trip_id) {
+    //   return res.status(400).send({
+    //     status: 'error',
+    //     error: 'No trip selected',
+    //   });
+    // }
 
     const checkTrip = 'SELECT * FROM trips JOIN buses on trips.bus_id = buses.id WHERE trips.id=$1';
     const currentBooking = 'SELECT seat_number FROM bookings where trip_id=$1';
@@ -54,7 +54,7 @@ const Booking = {
         const bookedResult = await db.query(createBookingQuery, booking);
         const booked = bookedResult.rows[0];
         const data = {};
-        data.booking_id = booked.id;
+        data.id = booked.id;
         data.user_id = booked.user_id;
         data.trip_id = booked.trip_id;
         data.bus_id = tripInfo.bus_id;
@@ -91,17 +91,38 @@ const Booking = {
   },
 
   async index(req, res) {
-    const getUserBookings = 'SELECT * FROM bookings where user_id = $1';
-    const getBookings = 'SELECT * FROM bookings';
-    let data;
+    const getUserBookings = 'SELECT * FROM bookings INNER JOIN users on bookings.user_id = users.id WHERE user_id = $1';
+    const getBookings = 'SELECT * FROM bookings INNER JOIN users on bookings.user_id = users.id';
+
+    let bookings;
     try {
       if (req.user.isAdmin) {
         const { rows } = await db.query(getBookings);
-        data = rows;
+        bookings = rows;
       } else {
         const { rows } = await db.query(getUserBookings, [req.user.id]);
-        data = rows;
+        bookings = rows;
       }
+
+      const data = bookings.map((
+        {
+          // eslint-disable-next-line camelcase
+          id, user_id, trip_id, bus_id, trip_date,
+          // eslint-disable-next-line camelcase
+          seat_number, first_name, last_name, email, created_at,
+        },
+      ) => ({
+        id,
+        user_id,
+        trip_id,
+        bus_id,
+        trip_date,
+        seat_number,
+        first_name,
+        last_name,
+        email,
+        created_at,
+      }));
 
       return res.status(200).send({
         status: 'success',
@@ -125,7 +146,20 @@ const Booking = {
           error: 'booking not found',
         });
       }
-      return res.status(200).send(rows[0]);
+      const booked = rows[0];
+      const data = {};
+      data.booking_id = booked.id;
+      data.user_id = booked.user_id;
+      data.trip_id = booked.trip_id;
+      data.seat_number = booked.seat_number;
+      data.first_name = req.user.firstName;
+      data.last_name = req.user.lastName;
+      data.email = req.user.email;
+      return res.status(201).send({
+        status: 'success',
+        data,
+      });
+      // return res.status(200).send(rows[0]);
     } catch (e) {
       return res.status(400).send({
         status: 'error',
@@ -190,15 +224,17 @@ const Booking = {
     const deleteQuery = 'DELETE FROM bookings WHERE id=$1 AND user_id = $2 returning *';
     try {
       const { rows } = await db.query(deleteQuery, [req.params.id, req.user.id]);
-      if (!rows[0]) {
-        return res.status(404).send({
-          status: 'error',
-          error: 'booking not found',
-        });
-      }
-      return res.status(204).send({
+      // if (!rows[0]) {
+      //   return res.status(404).send({
+      //     status: 'error',
+      //     error: 'booking not found',
+      //   });
+      // }
+      let data = rows[0];
+      data.message = 'booking successfully deleted';
+      return res.status(200).send({
         status: 'success',
-        error: 'booking successfully deleted',
+        data,
       });
     } catch (e) {
       return res.status(400).send(e);

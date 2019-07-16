@@ -2,6 +2,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import moment from 'moment';
+import faker from 'faker';
 import app from '../../src/index';
 // import db from '../../src/database';
 // import auth from '../../src/middleware/auth';
@@ -9,6 +10,10 @@ import app from '../../src/index';
 const should = chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
+
+const firstName = faker.name.firstName();
+const lastName = faker.name.lastName();
+const Mail = faker.internet.email();
 
 /**
  * User registration and login
@@ -18,9 +23,9 @@ const { expect } = chai;
  */
 describe('User CRUD operations /api/v1/auth/', () => {
   const user = {
-    first_name: 'John',
-    last_name: 'Doe',
-    email: 'uwem@nigeria.com',
+    first_name: firstName,
+    last_name: lastName,
+    email: Mail,
     password: 'secret',
     created_at: moment(new Date()),
     updated_at: moment(new Date()),
