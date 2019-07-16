@@ -106,19 +106,23 @@ const Trip = {
       SET status=$1 updated_at=$2, WHERE id=$3 returning *`;
     try {
       const { rows } = await db.query(findOneQuery, [req.params.id]);
-      if (!rows[0]) {
-        return res.status(404).send({
-          status: 'error',
-          error: 'trip not found',
-        });
-      }
+      // if (!rows[0]) {
+      //   return res.status(404).send({
+      //     status: 'error',
+      //     error: 'trip not found',
+      //   });
+      // }
       const values = [
-        req.body.status || rows[0].status,
+        req.body.status || 'cancelled',
         moment(new Date()),
         req.params.id,
       ];
       const response = await db.query(updateOneQuery, values);
-      return res.status(200).send(response.rows[0]);
+      let reply = response.rows[0];
+      return res.status(200).send({
+        status: 'success',
+        message: 'trip cancelled successfully',
+      });
     } catch (e) {
       return res.status(400).send(e);
     }

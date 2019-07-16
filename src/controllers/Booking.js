@@ -224,13 +224,13 @@ const Booking = {
     const deleteQuery = 'DELETE FROM bookings WHERE id=$1 AND user_id = $2 returning *';
     try {
       const { rows } = await db.query(deleteQuery, [req.params.id, req.user.id]);
-      if (!rows[0]) {
-        return res.status(404).send({
-          status: 'error',
-          error: 'booking not found',
-        });
-      }
-      return res.status(204).send({
+      // if (!rows[0]) {
+      //   return res.status(404).send({
+      //     status: 'error',
+      //     error: 'booking not found',
+      //   });
+      // }
+      return res.status(200).send({
         status: 'success',
         error: 'booking successfully deleted',
       });
