@@ -3,15 +3,15 @@ node_js:
   - "stable"
 install:
   - npm install
-#services:
-#  - postgresql
-#before_script:
-#  - psql -c 'create database wayfarer;' -U postgres
-#  - psql -c "CREATE USER wayfarer WITH PASSWORD null;" -U postgres
-#  - npm run build
-#  - npm run migrate-refresh
-#  - npm run migrate
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database wayfarer;' -U postgres
+  - psql -c "CREATE USER wayfarer WITH PASSWORD null;" -U postgres
+  - npm run build
+  - npm run migrate-refresh
+  - npm run migrate
 script:
+  - npm run test
+after_success:
   - npm run coverage
-#after_success:
-#  - npm run coverage
