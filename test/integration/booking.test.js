@@ -2,6 +2,8 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/index';
 import Auth from '../../src/controllers/utils/AuthHelper';
+import moment from './basic.test';
+import db from '../../src/database';
 
 const should = chai.should();
 chai.use(chaiHttp);
@@ -18,6 +20,7 @@ describe('Booking CRUD operations', () => {
     token = Auth.generateToken(1, true);
     done();
   });
+
   describe('/api/v1/trips Active trips', () => {
     it('should not show existing trips to unauthenticated user', (done) => {
       chai.request(app)

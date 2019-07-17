@@ -40,8 +40,8 @@ describe('Basic test', () => {
     ];
     db.query(createUserQuery, user);
     done();
-  }, 15000);
-  before((done) => {
+  });
+  before(async () => {
     const createBusQuery = `INSERT INTO buses(id, number_plate, manufacturer, model, year, capacity, created_at, updated_at)
         SELECT $1,$2,$3,$4,$5,$6,$7,$8
     WHERE NOT EXISTS (
@@ -57,10 +57,10 @@ describe('Basic test', () => {
       moment(new Date()),
       moment(new Date()),
     ];
-    db.query(createBusQuery, bus);
-    done();
-  }, 15000);
-  before((done) => {
+    await db.query(createBusQuery, bus);
+    // done();
+  });
+  before(async () => {
     const createTripQuery = `INSERT INTO trips(id, bus_id, origin, destination, trip_date, status, fare, created_at, updated_at)
         SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9
     WHERE NOT EXISTS (
@@ -77,30 +77,30 @@ describe('Basic test', () => {
       moment(new Date()),
       moment(new Date()),
     ];
-    db.query(createTripQuery, user);
-    done();
-  }, 15000);
-  before((done) => {
-    const createTripQuery = `INSERT INTO trips(id, bus_id, origin, destination, trip_date, status, fare, created_at, updated_at)
-        SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9
-    WHERE NOT EXISTS (
-        SELECT 1 FROM trips WHERE id=25
-    );`;
-    const user = [
-      25,
-      1,
-      'Eket',
-      'Gwagwalada',
-      '11-06-2019',
-      'active',
-      850.50,
-      moment(new Date()),
-      moment(new Date()),
-    ];
-    db.query(createTripQuery, user);
-    done();
-  }, 15000);
-  before((done) => {
+    await db.query(createTripQuery, user);
+    // done();
+  });
+  // before((done) => {
+  //   const createTripQuery = `INSERT INTO trips(id, bus_id, origin, destination, trip_date, status, fare, created_at, updated_at)
+  //       SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9
+  //   WHERE NOT EXISTS (
+  //       SELECT 1 FROM trips WHERE id=25
+  //   );`;
+  //   const user = [
+  //     25,
+  //     1,
+  //     'Eket',
+  //     'Gwagwalada',
+  //     '11-06-2019',
+  //     'active',
+  //     850.50,
+  //     moment(new Date()),
+  //     moment(new Date()),
+  //   ];
+  //   db.query(createTripQuery, user);
+  //   done();
+  // });
+  before(async () => {
     const createBookingQuery = `INSERT INTO bookings(id, trip_id, user_id, seat_number, created_at, updated_at)
         SELECT $1,$2,$3,$4,$5,$6
     WHERE NOT EXISTS (
@@ -114,9 +114,9 @@ describe('Basic test', () => {
       moment(new Date()),
       moment(new Date()),
     ];
-    db.query(createBookingQuery, booking);
-    done();
-  }, 15000);
+    await db.query(createBookingQuery, booking);
+    // done();
+  });
 
   it('should check that app server exists', (done) => {
     expect(app).to.be.a('function');

@@ -5,8 +5,6 @@ import Auth from '../../src/controllers/utils/AuthHelper';
 
 const should = chai.should();
 chai.use(chaiHttp);
-const { expect } = chai;
-
 
 /**
  * Admin create a bus
@@ -18,8 +16,8 @@ const { expect } = chai;
  */
 describe('Trip CRUD operations', () => {
   let token;
-  let busId = 1;
-  const tripId = 1;
+  const busId = 1;
+  // const tripId = 1;
 
   before((done) => { token = Auth.generateToken(1, true); done(); });
 
@@ -162,21 +160,21 @@ describe('Trip CRUD operations', () => {
         });
     });
 
-    it('should update a trip and change status to cancelled', (done) => {
-      chai.request(app)
-        .patch('/api/v1/trips/25')
-        .set('Content-Type', 'application/json')
-        .set('x-access-token', `${token}`)
-        .send()
-        .end((e, res) => {
-          should.exist(res.body);
-          res.should.have.status(200);
-          res.body.should.be.a('object');
-          // eslint-disable-next-line no-unused-expressions
-          res.body.should.have.property('status').eq('success');
-          done();
-        });
-    });
+    // it('should update a trip and change status to cancelled', (done) => {
+    //   chai.request(app)
+    //     .patch('/api/v1/trips/25')
+    //     .set('Content-Type', 'application/json')
+    //     .set('x-access-token', `${token}`)
+    //     .send()
+    //     .end((e, res) => {
+    //       should.exist(res.body);
+    //       res.should.have.status(200);
+    //       res.body.should.be.a('object');
+    //       // eslint-disable-next-line no-unused-expressions
+    //       res.body.should.have.property('status').eq('success');
+    //       done();
+    //     });
+    // });
 
     it('should not create a trip without complete field', (done) => {
       const trip = {
