@@ -16,7 +16,7 @@ describe('Booking CRUD operations', () => {
   //   + Math.random().toString(36).substring(2, 15);
   let token;
   const tripId = 1;
-  let bookingId = 1;
+  const bookingId = 1;
 
 
   // before((done) => {
@@ -113,8 +113,6 @@ describe('Booking CRUD operations', () => {
           res.body.should.be.a('object');
           res.body.should.have.property('data');
           res.body.should.have.property('status').eq('success');
-          const { id } = res.body.data;
-          bookingId = id;
           done();
         });
     });
