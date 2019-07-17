@@ -244,7 +244,11 @@ const Booking = {
         data,
       });
     } catch (e) {
-      return res.status(400).send(e);
+      return res.status(400).send({
+        status: 'error',
+        error: 'booking not found',
+        e
+      });
     }
   },
 
