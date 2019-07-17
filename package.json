@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
     "start": "node build/index.js",
-    "test": "mocha --require @babel/register ./test/integration/basic.test.js ./test/integration/user.test.js ./test/integration/trip.test.js ./test/integration/booking.test.js ./test/unit/auth.js --timeout 500000 --exit",
+    "test": "mocha --require @babel/register --async-only ./test/integration/basic.test.js ./test/integration/user.test.js ./test/integration/trip.test.js ./test/integration/booking.test.js ./test/unit/auth.js --timeout 500000 --exit",
     "build": "rm -rf ./build && babel -d ./build ./src -s",
     "migrate": "node src/database/migrate createAllTables",
     "migrate-refresh": "node src/database/migrate dropAllTables",

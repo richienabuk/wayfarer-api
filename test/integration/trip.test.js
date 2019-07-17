@@ -18,7 +18,7 @@ const { expect } = chai;
  */
 describe('Trip CRUD operations', () => {
   let token;
-  const busId = 1;
+  let busId = 1;
   const tripId = 1;
 
   before((done) => { token = Auth.generateToken(1, true); done(); });

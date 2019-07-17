@@ -1,5 +1,3 @@
-'use strict';
-
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import moment from 'moment';
@@ -12,17 +10,17 @@ chai.use(chaiHttp);
 const should = chai.should();
 
 describe('Basic test', () => {
-  before((done) => {
-    db.query('DELETE FROM users TRUNCATE').then(() => {
-      db.query('DELETE FROM bookings').then(() => {
-        done();
-      }).catch((err) => {
-        throw err;
-      });
-    }).catch((err) => {
-      throw err;
-    });
-  });
+  // before((done) => {
+  //   db.query('DELETE FROM users TRUNCATE').then(() => {
+  //     db.query('DELETE FROM bookings').then(() => {
+  //       done();
+  //     }).catch((err) => {
+  //       throw err;
+  //     });
+  //   }).catch((err) => {
+  //     throw err;
+  //   });
+  // });
   before((done) => {
     const createUserQuery = `INSERT INTO users(id, email, first_name, last_name, password, is_admin, created_at, updated_at)
         SELECT $1,$2,$3,$4,$5,$6,$7,$8
@@ -120,8 +118,9 @@ describe('Basic test', () => {
     done();
   });
 
-  it('should check that app server exists', () => {
+  it('should check that app server exists', (done) => {
     expect(app).to.be.a('function');
+    done();
   });
 
   it('should return 200 for landing page', (done) => {
