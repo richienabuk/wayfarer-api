@@ -10,7 +10,7 @@ chai.use(chaiHttp);
 const should = chai.should();
 
 describe('Basic test', () => {
-  before(async () => {
+  before((done) => {
     const createUserQuery = `INSERT INTO users(id, email, first_name, last_name, password, is_admin, created_at, updated_at)
         SELECT $1,$2,$3,$4,$5,$6,$7,$8
     WHERE NOT EXISTS (
@@ -27,7 +27,47 @@ describe('Basic test', () => {
       moment(new Date()),
       moment(new Date()),
     ];
-    await db.query(createUserQuery, user);
+    db.query(createUserQuery, user);
+    done();
+  });
+  before((done) => {
+    const createBusQuery = `INSERT INTO buses(id, number_plate, manufacturer, model, year, capacity, created_at, updated_at)
+        SELECT $1,$2,$3,$4,$5,$6,$7,$8
+    WHERE NOT EXISTS (
+        SELECT 1 FROM buses WHERE number_plate='4FDG67GiJ'
+    );`;
+    const bus = [
+      1,
+      '4FDG67GiJ',
+      'Nabuk',
+      'Ford',
+      '1945',
+      32,
+      moment(new Date()),
+      moment(new Date()),
+    ];
+    db.query(createBusQuery, bus);
+    done();
+  });
+  before((done) => {
+    const createTripQuery = `INSERT INTO trips(id, bus_id, origin, destination, trip_date, status, fare, created_at, updated_at)
+        SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9
+    WHERE NOT EXISTS (
+        SELECT 1 FROM trips WHERE id=1
+    );`;
+    const user = [
+      1,
+      1,
+      'Eket',
+      'Gwagwalada',
+      '11-06-2019',
+      'active',
+      850.50,
+      moment(new Date()),
+      moment(new Date()),
+    ];
+    db.query(createTripQuery, user);
+    done();
   });
 
   it('should check that app server exists', () => {

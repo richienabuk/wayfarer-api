@@ -6,9 +6,9 @@ const should = chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
 
-const randString = Math.random().toString(25).substring(2, 8)
-  + Math.random().toString(25).substring(2, 8)
-const Mail = `${randString}@mail.com`;
+// const randString = Math.random().toString(25).substring(2, 8)
+//   + Math.random().toString(25).substring(2, 8)
+const Mail = 'newmail@mail.com';
 
 /**
  * User registration and login
@@ -26,7 +26,7 @@ describe('User CRUD operations /api/v1/auth/', () => {
         .send({
           first_name: 'Essien',
           last_name: 'Raphael',
-          email: Mail,
+          email: 'anothermail@mail.com',
           password: 'secret1234',
         })
         .end((e, res) => {

@@ -21,7 +21,7 @@ describe('Trip CRUD operations', () => {
   let busId;
   let tripId;
 
-  before(async () => { token = Auth.generateToken(1, true); });
+  before((done) => { token = Auth.generateToken(1, true); done(); });
   before((done) => {
     const bus = {
       number_plate: Math.random().toString(36).substring(2, 15)
