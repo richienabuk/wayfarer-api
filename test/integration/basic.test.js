@@ -69,6 +69,43 @@ describe('Basic test', () => {
     db.query(createTripQuery, user);
     done();
   });
+  before((done) => {
+    const createTripQuery = `INSERT INTO trips(id, bus_id, origin, destination, trip_date, status, fare, created_at, updated_at)
+        SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9
+    WHERE NOT EXISTS (
+        SELECT 1 FROM trips WHERE id=25
+    );`;
+    const user = [
+      25,
+      1,
+      'Eket',
+      'Gwagwalada',
+      '11-06-2019',
+      'active',
+      850.50,
+      moment(new Date()),
+      moment(new Date()),
+    ];
+    db.query(createTripQuery, user);
+    done();
+  });
+  before((done) => {
+    const createBookingQuery = `INSERT INTO bookings(id, trip_id, user_id, seat_number, created_at, updated_at)
+        SELECT $1,$2,$3,$4,$5,$6
+    WHERE NOT EXISTS (
+        SELECT 1 FROM bookings WHERE id=1
+    );`;
+    const booking = [
+      1,
+      1,
+      1,
+      12,
+      moment(new Date()),
+      moment(new Date()),
+    ];
+    db.query(createBookingQuery, booking);
+    done();
+  });
 
   it('should check that app server exists', () => {
     expect(app).to.be.a('function');

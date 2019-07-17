@@ -22,45 +22,6 @@ describe('Trip CRUD operations', () => {
   const tripId = 1;
 
   before((done) => { token = Auth.generateToken(1, true); done(); });
-  // before((done) => {
-  //   const bus = {
-  //     number_plate: Math.random().toString(36).substring(2, 15)
-  //       + Math.random().toString(36).substring(2, 15),
-  //     manufacturer: 'Lifera',
-  //     model: 'Alma',
-  //     year: '1999',
-  //     capacity: 16,
-  //   };
-  //   chai.request(app)
-  //     .post('/api/v1/buses')
-  //     .set('Content-Type', 'application/json')
-  //     .set('x-access-token', `${token}`)
-  //     .send(bus)
-  //     .end((e, res) => {
-  //       should.exist(res.body);
-  //       const { id } = res.body.data;
-  //       busId = id;
-  //       done();
-  //     });
-  // });
-  // before((done) => {
-  //   chai.request(app)
-  //     .post('/api/v1/trips')
-  //     .set('Content-Type', 'application/json')
-  //     .set('x-access-token', `${token}`)
-  //     .send({
-  //       bus_id: busId,
-  //       origin: 'Eket',
-  //       destination: 'Gwagwalada',
-  //       trip_date: '11-06-2019',
-  //       fare: 850.50,
-  //     })
-  //     .end((e, res) => {
-  //       const { id } = res.body.data;
-  //       tripId = id;
-  //       done();
-  //     });
-  // });
 
   describe('/api/v1/buses Buses', () => {
     const bus = {
@@ -84,20 +45,6 @@ describe('Trip CRUD operations', () => {
           res.body.should.be.a('object');
           res.body.should.have.property('data');
           res.body.should.have.property('status').eq('success');
-          done();
-        });
-    });
-
-    it('Should return error 422 when bus with plate number already exist', (done) => {
-      chai.request(app)
-        .post('/api/v1/buses')
-        .set('Content-Type', 'application/json')
-        .set('x-access-token', `${token}`)
-        .send(bus)
-        .end((e, res) => {
-          res.should.have.status(422);
-          res.body.should.have.property('status').eq('error');
-          expect(res.body.error).to.be.equal('The bus with the plate number is already registered');
           done();
         });
     });
@@ -217,7 +164,7 @@ describe('Trip CRUD operations', () => {
 
     it('should update a trip and change status to cancelled', (done) => {
       chai.request(app)
-        .patch(`/api/v1/trips/${tripId}`)
+        .patch('/api/v1/trips/25')
         .set('Content-Type', 'application/json')
         .set('x-access-token', `${token}`)
         .send()
