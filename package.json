@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
     "start": "node build/index.js",
-    "test": "mocha --require @babel/register ./test --recursive --timeout 50000 --exit",
+    "test": "mocha --require @babel/register --async-only ./test/integration/basic.test.js ./test/integration/user.test.js ./test/integration/trip.test.js ./test/integration/booking.test.js ./test/unit/auth.js --timeout 500000 --exit",
     "build": "rm -rf ./build && babel -d ./build ./src -s",
     "migrate": "node src/database/migrate createAllTables",
     "migrate-refresh": "node src/database/migrate dropAllTables",
@@ -34,7 +34,6 @@
     "bcrypt": "^3.0.6",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
-    "faker": "^4.1.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "pg": "^7.11.0"

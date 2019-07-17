@@ -1,17 +1,14 @@
-/* eslint-disable camelcase */
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import moment from 'moment';
-import faker from 'faker';
-import db from '../../src/database';
-import Auth from '../../src/controllers/utils/AuthHelper';
 import app from '../../src/index';
 
 const should = chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
 
-const Mail = faker.internet.email();
+// const randString = Math.random().toString(25).substring(2, 8)
+//   + Math.random().toString(25).substring(2, 8)
+const Mail = 'newmail@mail.com';
 
 /**
  * User registration and login
@@ -20,48 +17,20 @@ const Mail = faker.internet.email();
  * POST /api/v1/auth/signin
  */
 describe('User CRUD operations /api/v1/auth/', () => {
-  // before(() => {
-  //   db.query('TRUNCATE bookings, trips, buses, users');
-  // })
-  before(async () => {
-    const createUserQuery = `INSERT INTO users(id, email, first_name, last_name, password, is_admin, created_at, updated_at) 
-        SELECT $1,$2,$3,$4,$5,$6,$7,$8
-    WHERE NOT EXISTS (
-        SELECT 1 FROM users WHERE email='admin@andela.com'
-    );`;
-    const hashPassword = Auth.hashPassword('password');
-    const user = [
-      1,
-      'admin@andela.com',
-      'Richie',
-      'Nabuk',
-      hashPassword,
-      true,
-      moment(new Date()),
-      moment(new Date()),
-    ];
-    await db.query(createUserQuery, user);
-  });
-
-  it('should check that app server exists', () => {
-    expect(app).to.be.a('function');
-  });
-
   describe('POST /api/v1/auth/signup User registration', () => {
-    // it('should return 201 and token for valid credentials', (done) => {
+    // it('should return 201 for signup and token for valid credentials', (done) => {
     // // send request to the app
     //   chai.request(app)
     //     .post('/api/v1/auth/signup')
     //     .set('Content-Type', 'Application/json')
     //     .send({
-    //       first_name: 'Michael',
-    //       last_name: 'Bush',
-    //       email: Mail,
-    //       password: 'secret',
+    //       first_name: 'Essien',
+    //       last_name: 'Raphael',
+    //       email: 'anothermail@mail.com',
+    //       password: 'secret1234',
     //     })
     //     .end((e, res) => {
     //       should.exist(res.body);
-    //       // validate
     //       res.should.have.status(201);
     //       // eslint-disable-next-line no-unused-expressions
     //       expect(res.body.data.token).to.exist;
@@ -94,7 +63,7 @@ describe('User CRUD operations /api/v1/auth/', () => {
         .send({
           first_name: 'Michael',
           last_name: 'Bush',
-          email: 'memail@',
+          email: 'mail@mmking',
           password: 'secret',
         })
         .end((e, res) => {

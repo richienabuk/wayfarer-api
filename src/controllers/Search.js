@@ -2,6 +2,12 @@ import db from '../database';
 
 const Search = {
   async trips(req, res) {
+    if (!req.body.origin && !req.body.destination) {
+      return res.status(400).send({
+        status: 'error',
+        error: 'Enter at least one search parameter',
+      });
+    }
     const getSearchQuery = 'select * from trips where origin Ilike $1 AND status=$2 OR destination ILIKE $3 AND status =$2';
     const search = [
       `%${req.body.origin}%`,

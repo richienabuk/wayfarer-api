@@ -1,9 +1,6 @@
 language: node_js
 node_js:
-  - "stable"
-cache:
-  directories:
-    - "node_modules"
+  - 10.16.0
 install:
   - npm install
 services:

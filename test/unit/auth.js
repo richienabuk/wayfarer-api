@@ -12,12 +12,14 @@ const { expect } = chai;
  */
 describe('Generate authentication token', () => {
   let token;
-  before(() => {
+  before((done) => {
     token = Auth.generateToken(1, true);
+    done();
   });
 
-  it('should return a valid JWT', () => {
+  it('should return a valid JWT', (done) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     expect(decoded).to.include({ userId: 1, isAdmin: true });
+    done();
   });
 });

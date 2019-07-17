@@ -3,6 +3,12 @@ import db from '../database';
 import Seat from './utils/BookingHelper';
 
 const Booking = {
+  /**
+   * Allows users to book seat on available trips
+   * @param req
+   * @param res
+   * @returns {object}
+   */
   async create(req, res) {
     if (!req.body.trip_id) {
       return res.status(400).send({
@@ -90,6 +96,12 @@ const Booking = {
     }
   },
 
+  /**
+   * displays list of bookings to admin or user's specific booking to logged in user.
+   * @param req
+   * @param res
+   * @returns {Object}
+   */
   async index(req, res) {
     const getUserBookings = 'SELECT * FROM bookings INNER JOIN users on bookings.user_id = users.id WHERE user_id = $1';
     const getBookings = 'SELECT * FROM bookings INNER JOIN users on bookings.user_id = users.id';
@@ -136,6 +148,12 @@ const Booking = {
     }
   },
 
+  /**
+   * Show a single booking with an id to the logged in user.
+   * @param req
+   * @param res
+   * @returns {Object}
+   */
   async show(req, res) {
     const text = 'SELECT * FROM bookings WHERE id = $1 AND user_id = $2';
     try {
@@ -168,6 +186,12 @@ const Booking = {
     }
   },
 
+  /**
+   * Allows user to change seat for a particular trip
+   * @param req
+   * @param res
+   * @returns {Object}
+   */
   async update(req, res) {
     const findOneQuery = 'SELECT * FROM bookings WHERE id=$1 AND user_id = $2';
     try {
@@ -220,20 +244,30 @@ const Booking = {
         data,
       });
     } catch (e) {
-      return res.status(400).send(e);
+      return res.status(400).send({
+        status: 'error',
+        error: 'booking not found',
+        e
+      });
     }
   },
 
+  /**
+   * Allows users to delete their booking
+   * @param req
+   * @param res
+   * @returns {Object}
+   */
   async delete(req, res) {
     const deleteQuery = 'DELETE FROM bookings WHERE id=$1 AND user_id = $2 returning *';
     try {
       const { rows } = await db.query(deleteQuery, [req.params.id, req.user.id]);
-      // if (!rows[0]) {
-      //   return res.status(404).send({
-      //     status: 'error',
-      //     error: 'booking not found',
-      //   });
-      // }
+      if (!rows[0]) {
+        return res.status(404).send({
+          status: 'error',
+          error: 'booking not found',
+        });
+      }
       const data = rows[0];
       data.message = 'booking successfully deleted';
       return res.status(200).send({
