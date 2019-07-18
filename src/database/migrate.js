@@ -11,6 +11,19 @@ pool.on('connect', () => {
   console.log('connected to psql db');
 });
 
+const migrate = (queryText) => {
+  return new Promise((resolve, reject) => {
+    pool.query(queryText)
+      .then((res) => {
+        resolve(res);
+        pool.end();
+      })
+      .catch((e) => {
+        pool.end();
+        reject(e);
+      });
+  });
+};
 /**
  * Create users table
  */
@@ -27,15 +40,7 @@ const createUserTable = () => {
         updated_at TIMESTAMP NOT NULL
       )`;
 
-  pool.query(queryText)
-    .then((res) => {
-      console.log(res);
-      pool.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      pool.end();
-    });
+  migrate(queryText);
 };
 
 /**
@@ -43,15 +48,7 @@ const createUserTable = () => {
  */
 const dropUserTable = () => {
   const queryText = 'DROP TABLE IF EXISTS users returning *';
-  pool.query(queryText)
-    .then((res) => {
-      console.log(res);
-      pool.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      pool.end();
-    });
+  migrate(queryText);
 };
 
 /**
@@ -70,15 +67,7 @@ const createBusTable = () => {
         updated_at TIMESTAMP NOT NULL
       )`;
 
-  pool.query(queryText)
-    .then((res) => {
-      console.log(res);
-      pool.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      pool.end();
-    });
+  migrate(queryText);
 };
 
 /**
@@ -86,15 +75,7 @@ const createBusTable = () => {
  */
 const dropBusTable = () => {
   const queryText = 'DROP TABLE IF EXISTS buses returning *';
-  pool.query(queryText)
-    .then((res) => {
-      console.log(res);
-      pool.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      pool.end();
-    });
+  migrate(queryText);
 };
 
 /**
@@ -105,15 +86,7 @@ const createEnumType = () => {
   CREATE TYPE trip_status AS ENUM ('active', 'suspended', 'cancelled')
   `;
 
-  pool.query(queryText)
-    .then((res) => {
-      console.log(res);
-      pool.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      pool.end();
-    });
+  migrate(queryText);
 };
 
 /**
@@ -135,15 +108,7 @@ const createTripTable = () => {
         FOREIGN KEY (bus_id) REFERENCES buses (id) ON DELETE CASCADE
       )`;
 
-  pool.query(queryText)
-    .then((res) => {
-      console.log(res);
-      pool.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      pool.end();
-    });
+  migrate(queryText);
 };
 
 /**
@@ -151,15 +116,7 @@ const createTripTable = () => {
  */
 const dropTripTable = () => {
   const queryText = 'DROP TABLE IF EXISTS trips returning *';
-  pool.query(queryText)
-    .then((res) => {
-      console.log(res);
-      pool.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      pool.end();
-    });
+  migrate(queryText);
 };
 
 /**
@@ -181,15 +138,7 @@ const createBookingTable = () => {
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
       )`;
 
-  pool.query(queryText)
-    .then((res) => {
-      console.log(res);
-      pool.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      pool.end();
-    });
+  migrate(queryText);
 };
 
 /**
@@ -197,15 +146,7 @@ const createBookingTable = () => {
  */
 const dropBookingTable = () => {
   const queryText = 'DROP TABLE IF EXISTS bookings returning *';
-  pool.query(queryText)
-    .then((res) => {
-      console.log(res);
-      pool.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      pool.end();
-    });
+  migrate(queryText);
 };
 
 /**
