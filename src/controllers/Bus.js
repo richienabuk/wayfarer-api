@@ -1,5 +1,6 @@
 import moment from 'moment';
 import db from '../database';
+import { success, error } from './utils/ResHelper';
 
 const Bus = {
   async create(req, res) {
@@ -8,10 +9,7 @@ const Bus = {
       || !req.body.model
       || !req.body.year
       || !req.body.capacity) {
-      return res.status(400).send({
-        status: 'error',
-        error: 'Some values are missing',
-      });
+      return res.status(400).send(error('Some values are missing'));
     }
 
     const createBusQuery = `INSERT INTO 
@@ -31,21 +29,12 @@ const Bus = {
     try {
       const { rows } = await db.query(createBusQuery, bus);
       const data = rows[0];
-      return res.status(201).send({
-        status: 'success',
-        data,
-      });
+      return res.status(201).send(success(data));
     } catch (e) {
       if (e.routine === '_bt_check_unique') {
-        return res.status(422).send({
-          status: 'error',
-          error: 'The bus with the plate number is already registered',
-        });
+        return res.status(422).send(error('The bus with the plate number is already registered'));
       }
-      return res.status(400).send({
-        status: 'error',
-        error: e,
-      });
+      return res.status(400).send(error(e));
     }
   },
 
@@ -56,16 +45,9 @@ const Bus = {
       const data = rows;
       // data.bus_id = rows.id;
       // data.capacity = rows.capacity;
-      return res.status(200).send({
-        status: 'success',
-        data,
-        rowCount,
-      });
+      return res.status(200).send(success(data, rowCount));
     } catch (e) {
-      return res.status(400).send({
-        status: 'error',
-        error: e,
-      });
+      return res.status(400).send(error(e));
     }
   },
 };

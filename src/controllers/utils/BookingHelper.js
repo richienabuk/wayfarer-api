@@ -21,7 +21,7 @@ const Seat = {
     // eslint-disable-next-line no-param-reassign
     capacity = capacity.toString().split(',').map(Number);
 
-    for (let i in capacity) {
+    for (const i in capacity) {
       if (!taken.includes(capacity[i])) availableSeat.push(capacity[i]);
     }
 

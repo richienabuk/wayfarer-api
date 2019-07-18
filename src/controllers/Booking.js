@@ -1,6 +1,7 @@
 import moment from 'moment';
 import db from '../database';
 import Seat from './utils/BookingHelper';
+import { success, error } from './utils/ResHelper';
 
 const Booking = {
   /**
@@ -11,10 +12,7 @@ const Booking = {
    */
   async create(req, res) {
     if (!req.body.trip_id) {
-      return res.status(400).send({
-        status: 'error',
-        error: 'No trip selected',
-      });
+      return res.status(400).send(error('No trip selected'));
     }
 
     const checkTrip = 'SELECT * FROM trips JOIN buses on trips.bus_id = buses.id WHERE trips.id=$1';
@@ -32,14 +30,14 @@ const Booking = {
       const bookedSeats = bookingRows.rows.map(seat => seat.seat_number);
       const remainingSeat = Seat.getAvailableSeat(bookedSeats, tripInfo.capacity);
 
-      if (!remainingSeat.length) return res.status(404).send({ status: 'error', error: 'the trip you intend to book is filled up, try another' });
+      if (!remainingSeat.length) return res.status(404).send(error('the trip you intend to book is filled up, try another'));
 
       let seatNumber;
 
       if (!req.body.seat_number) {
         seatNumber = Seat.generateSeatNumber(remainingSeat);
       } else if (!remainingSeat.includes(Number(req.body.seat_number))) {
-        res.status(400).send({ status: 'error', error: 'Seat is already taken' });
+        res.status(400).send(error('Seat is already taken'));
       } else {
         seatNumber = req.body.seat_number;
       }
@@ -69,30 +67,18 @@ const Booking = {
         data.first_name = req.user.firstName;
         data.last_name = req.user.lastName;
         data.email = req.user.email;
-        return res.status(201).send({
-          status: 'success',
-          data,
-        });
+        return res.status(201).send(success(data));
       } catch (e) {
         if (e.constraint === 'bookings_trip_id_seat_number_key') {
-          return res.status(422).send({
-            status: 'error',
-            error: 'Seat has already been taken, choose another one',
-          });
+          return res.status(422).send(error('Seat has already been taken, choose another one'));
         }
         if (e.constraint === 'bookings_pkey') {
-          return res.status(422).send({
-            status: 'error',
-            error: 'You already have a booking for this trip',
-          });
+          return res.status(422).send(error('You already have a booking for this trip'));
         }
-        return res.status(400).send({
-          status: 'error',
-          error: e,
-        });
+        return res.status(400).send(error(e));
       }
     } catch (e) {
-      return e;
+      return res.status(400).send(error(e));
     }
   },
 
@@ -136,15 +122,9 @@ const Booking = {
         created_at,
       }));
 
-      return res.status(200).send({
-        status: 'success',
-        data,
-      });
+      return res.status(200).send(success(data));
     } catch (e) {
-      return res.status(400).send({
-        status: 'error',
-        error: e,
-      });
+      return res.status(400).send(error(e));
     }
   },
 
@@ -159,10 +139,7 @@ const Booking = {
     try {
       const { rows } = await db.query(text, [req.params.id, req.user.id]);
       if (!rows[0]) {
-        return res.status(404).send({
-          status: 'error',
-          error: 'booking not found',
-        });
+        return res.status(404).send(error('booking not found'));
       }
       const booked = rows[0];
       const data = {};
@@ -173,16 +150,10 @@ const Booking = {
       data.first_name = req.user.firstName;
       data.last_name = req.user.lastName;
       data.email = req.user.email;
-      return res.status(201).send({
-        status: 'success',
-        data,
-      });
+      return res.status(201).send(success(data));
       // return res.status(200).send(rows[0]);
     } catch (e) {
-      return res.status(400).send({
-        status: 'error',
-        error: e,
-      });
+      return res.status(400).send(error(e));
     }
   },
 
@@ -198,10 +169,7 @@ const Booking = {
       const findBooking = await db.query(findOneQuery, [req.params.id, req.user.id]);
       const thisbooking = findBooking.rows[0];
       if (!thisbooking) {
-        return res.status(404).send({
-          status: 'error',
-          error: 'booking not found',
-        });
+        return res.status(404).send(error('booking not found'));
       }
 
       const checkTrip = 'SELECT * FROM trips JOIN buses on trips.bus_id = buses.id WHERE trips.id=$1';
@@ -209,7 +177,7 @@ const Booking = {
 
       const { rows } = await db.query(checkTrip, [thisbooking.trip_id]);
 
-      if (rows[0].status !== 'active') return res.status(404).send({ status: 'error', error: 'You are not allowed to change seat for a suspended or cancelled trip' });
+      if (rows[0].status !== 'active') return res.status(404).send(error('You are not allowed to change seat for a suspended or cancelled trip'));
       const tripInfo = rows[0];
 
       const bookingRows = await db.query(currentBooking, [thisbooking.trip_id]);
@@ -217,12 +185,12 @@ const Booking = {
       const bookedSeats = bookingRows.rows.map(seat => seat.seat_number);
       const remainingSeat = Seat.getAvailableSeat(bookedSeats, tripInfo.capacity);
 
-      if (!remainingSeat.length) return res.status(404).send({ status: 'error', error: 'sorry, there is no available seat to change to' });
+      if (!remainingSeat.length) return res.status(404).send(error('sorry, there is no available seat to change to'));
 
       let seatNumber;
 
       if (!remainingSeat.includes(Number(req.body.seat_number))) {
-        res.status(400).send({ status: 'error', error: 'Seat is already taken' });
+        res.status(400).send(error('Seat is already taken'));
       } else {
         seatNumber = req.body.seat_number;
       }
@@ -239,16 +207,9 @@ const Booking = {
       ];
       const response = await db.query(updateOneQuery, values);
       const data = response.rows[0]
-      return res.status(200).send({
-        status: 'success',
-        data,
-      });
+      return res.status(200).send(success(data));
     } catch (e) {
-      return res.status(400).send({
-        status: 'error',
-        error: 'booking not found',
-        e
-      });
+      return res.status(400).send(error('booking not found', e));
     }
   },
 
@@ -263,19 +224,13 @@ const Booking = {
     try {
       const { rows } = await db.query(deleteQuery, [req.params.id, req.user.id]);
       if (!rows[0]) {
-        return res.status(404).send({
-          status: 'error',
-          error: 'booking not found',
-        });
+        return res.status(404).send(error('booking not found'));
       }
       const data = rows[0];
       data.message = 'booking successfully deleted';
-      return res.status(200).send({
-        status: 'success',
-        data,
-      });
+      return res.status(200).send(success(data));
     } catch (e) {
-      return res.status(400).send(e);
+      return res.status(400).send(error(e));
     }
   },
 };
